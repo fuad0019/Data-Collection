@@ -115,7 +115,12 @@ PUT songskipped
 }
 
 /////// User stuff
-
+GET users/_search
+{
+  "query": {"match": {
+    "name": "Bob"
+  }}
+}
 // Make user index
 PUT user
 {  
@@ -192,7 +197,7 @@ GET song/_search
 {
   "sort": [
     {
-      "title": {
+      "song": {
         "order": "asc"
       }
     }
@@ -214,6 +219,18 @@ GET /_search
     }
   }
 }
+
+
+//GET History for specific user
+GET songplayed/_search
+{
+  "query": {"match": {
+    "user": "Bob"
+  }}
+}
+
+//GET USER
+
 
 // Insert song played
 POST songstarted/_doc
