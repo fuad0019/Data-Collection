@@ -1,0 +1,239 @@
+// Make song index
+PUT song
+{  
+   "settings":{  
+      "number_of_shards":3,
+      "number_of_replicas":2
+   },
+   "mappings":{  
+      "properties":{  
+         "title":{  
+            "type":"keyword"
+         },
+         "duration":{  
+            "type":"integer"
+         }
+      }
+   }
+}
+
+// Make songstarted index
+PUT songstarted
+{  
+   "settings":{  
+      "number_of_shards":3,
+      "number_of_replicas":2
+   },
+   "mappings":{  
+      "properties":{  
+         "timestamp":{  
+            "type":"date"
+         },
+         "user":{  
+            "type":"keyword"
+         },
+         "song":{  
+            "type":"keyword"
+         }
+      }
+   }
+}
+
+// Make songpaused index
+PUT songpaused
+{  
+   "settings":{  
+      "number_of_shards":3,
+      "number_of_replicas":2
+   },
+   "mappings":{  
+      "properties":{  
+         "timestamp":{  
+            "type":"date"
+         },
+         "user":{  
+            "type":"keyword"
+         },
+         "song":{  
+            "type":"keyword"
+         },
+         "duration":{  
+            "type":"integer"
+         }
+      }
+   }
+}
+
+// Make songunpaused index
+PUT songunpaused
+{  
+   "settings":{  
+      "number_of_shards":3,
+      "number_of_replicas":2
+   },
+   "mappings":{  
+      "properties":{  
+         "timestamp":{  
+            "type":"date"
+         },
+         "user":{  
+            "type":"keyword"
+         },
+         "song":{  
+            "type":"keyword"
+         },
+         "duration":{  
+            "type":"integer"
+         }
+      }
+   }
+}
+
+//Make PUT songskipped index
+PUT songskipped
+{  
+   "settings":{  
+      "number_of_shards":3,
+      "number_of_replicas":2
+   },
+   "mappings":{  
+      "properties":{  
+         "timestamp":{  
+            "type":"date"
+         },
+         "user":{  
+            "type":"keyword"
+         },
+         "song":{  
+            "type":"keyword"
+         },
+         "duration":{  
+            "type":"integer"
+         }
+      }
+   }
+}
+
+/////// User stuff
+
+// Make user index
+PUT user
+{  
+   "settings":{  
+      "number_of_shards":3,
+      "number_of_replicas":2
+   },
+   "mappings":{  
+      "properties":{  
+         "name":{  
+            "type":"keyword"
+         },
+         "email":{  
+            "type":"keyword"
+         },
+         "dateofbirth":{  
+            "type":"date"
+         },
+         "gender":{  
+            "type":"keyword"
+         },
+         "country":{  
+            "type":"keyword"
+         }
+      }
+   }
+}
+
+
+
+
+
+///////////////////////////////////////// QUERIES
+
+
+// Search for songstarted between two dates
+//https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html
+GET songstarted/_search
+{
+  "query": { 
+    "bool": { 
+      "must": [
+        { "match": { "title":   "Never gonna give you up"  }}
+      ],
+      "filter": [ 
+        { "range": { "date": { "gte": "2021-06-01" }}}
+      ]
+    }
+  }
+}
+
+// Get top 10 most played in last week, with song name and amount of plays
+GET songstarted/_search
+{
+  "query": {
+    "bool": {
+      "filter":
+        { "range": { "timestamp": { "gte": "now-7d/d", "lt": "now/d" }}
+        }
+      }
+    },
+  "aggs": {
+      "songs": {
+          "terms": {
+          "field": "song",
+          "size": 10
+          }
+      }
+    }
+}
+
+//Example of searching for all songs sorted in ascending order by title
+GET song/_search
+{
+  "sort": [
+    {
+      "title": {
+        "order": "asc"
+      }
+    }
+  ], 
+  "query": {
+    "match_all": {}
+  }
+}
+
+// relative date
+GET /_search
+{
+  "query": {
+    "range": {
+      "date": {
+        "gte": "now-1d/d",
+        "lt": "now/d"
+      }
+    }
+  }
+}
+
+// Insert song played
+POST songstarted/_doc
+{  
+   "song":"Never gonna give you up",
+   "user":"victor",
+   "timestamp":"2021-10-24T17:20:38.000Z"
+}
+
+// Insert song
+POST song/_doc
+{  
+   "title":"",
+   "duration":"",
+   "streams":""
+}
+
+POST song/_doc
+{  
+   "title":"",
+   "duration":"",
+   "streams":""
+}

@@ -1,0 +1,35 @@
+PUT traveler
+{  
+   "settings":{  
+      "number_of_shards":5,
+      "number_of_replicas":2
+   },
+   "mappings":{  
+      "properties":{  
+         "name":{  
+            "type":"keyword"
+         },
+         "age":{  
+            "type":"integer"
+         },
+         "background":{  
+            "type":"text"
+         },
+         "nationality":{  
+            "type":"keyword"
+         }
+      }
+   }
+}
+
+// Amount of documents in song index with title "Never gonna give you up"
+GET song/_count
+{
+  "query": {
+    "query_string": {
+      "default_field": "title",
+      "query": "Never gonna give you up"
+    }
+  }
+}
+
