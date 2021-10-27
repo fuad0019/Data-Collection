@@ -25,7 +25,8 @@ def generate_users(fake, n):
             "name": name,
             "email": fake.ascii_email(),
             "gender": random.choice(gender),
-            "country": fake.country()
+            "country": fake.country(),
+            "dob": fake.date_between(start_date='-60y', end_date='-10y')
         })
         
     return users
@@ -103,6 +104,7 @@ def generate_userIndex(fake,users,days):
                 "email": user["email"],
                 "gender": user["gender"],
                 "country": user["country"],
+                "dob":user["dob"],
                 "timestamp": genTimestamp
             }
 

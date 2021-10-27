@@ -3,6 +3,9 @@ from flask import Flask, jsonify
 from markupsafe import escape
 from elasticsearch import Elasticsearch
 import json
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
+
 
 
 elastic = Elasticsearch(hosts=["192.168.136.34"])
@@ -17,24 +20,32 @@ app = Flask(__name__)
 def home():
     return 'It still lives!'
 
-@app.route('/users/<username>')
-def get_user_profile(username):
+@app.route('/users/<id>')
+def get_user_profile(id):
     # Get a user profile
-    results = elastic.search(index="users", doc_type="_doc", body={"query": {"match":{"name": username}}})
-    return results['hits']
-
-    
-    
-@app.route('/history/<username>')
-def get_history(username):
-    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {"match":{"user": username}}})
-    '''
-    res = ""
-    x = 0
+    results = elastic.search(index="users", doc_type="_doc", body={"query": {"match":{"_id": id}}}, size=1)
+    userData = []
     for i in results['hits'].get("hits"):
-        res = res + "{ \"song\" : " + i['_source']["song"] + ",\n \"plays\" :"  + i['_source']["timestamp"]] + "\n}\n"
-        x = x+1
-    '''
+        dateString = i['_source']["dob"]
+        dob = datetime.strptime(dateString,'%Y-%m-%d')
+
+        data = {
+            "Name": i['_source']["name"],
+            "E-mail": i['_source']["email"],
+            "Gender": i['_source']["gender"],
+            "Country": i['_source']["country"],
+            "Age": str(relativedelta(datetime.today(),dob).years)
+        }
+        userData.append(json.dumps(data))
+
+    return str(userData)
+
+# http://192.168.136.61:5000/history/41c6e6d7-b78c-413f-adb3-0567aa4996ef
+    
+@app.route('/history/<userid>')
+def get_history(userid):
+    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {"match":{"user": userid}}})
+
     userHistory = []
     for i in results['hits'].get("hits"):
         data = {
@@ -46,9 +57,7 @@ def get_history(username):
     
 
 
-'''
 
-'''
 @app.route('/topsongs')
 def get_topsongs():
     # Get top 10 songs started the last week
@@ -66,15 +75,6 @@ def get_topsongs():
         topsongs.append(json.dumps(data))
 
 
-    #name = ""
-    
-    #for i in results['aggregations']['songs']['buckets']:
-        #name = name + "{ \"song\" : " + i["key"] + ",\n \"plays\" :" + str(i["doc_count"]) + "\n}\n"
-    
-
-
-    #return results['aggregations']['songs']['buckets'][0]['key']
-    #return "{ \"song\" : " + str(results['aggregations']['songs']['buckets'][0]["doc_count"]) + ",\n \"plays\" :" + "\n}"
     return str(topsongs)
 
 if __name__ == '__main__':
