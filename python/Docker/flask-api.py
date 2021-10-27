@@ -18,7 +18,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET']) # Define http method
 def home():
-    return 'It stillsdfsdf lives!'
+    return 'It still lives!'
 
 @app.route('/users/<id>')
 def get_user_profile(id):
@@ -40,18 +40,12 @@ def get_user_profile(id):
 
     return str(userData)
 
+# http://192.168.136.61:5000/history/41c6e6d7-b78c-413f-adb3-0567aa4996ef
     
-    
-@app.route('/history/<username>')
-def get_history(username):
-    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {"match":{"user": username}}})
-    '''
-    res = ""
-    x = 0
-    for i in results['hits'].get("hits"):
-        res = res + "{ \"song\" : " + i['_source']["song"] + ",\n \"plays\" :"  + i['_source']["timestamp"]] + "\n}\n"
-        x = x+1
-    '''
+@app.route('/history/<userid>')
+def get_history(userid):
+    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {"match":{"user": userid}}})
+
     userHistory = []
     for i in results['hits'].get("hits"):
         data = {
@@ -63,9 +57,7 @@ def get_history(username):
     
 
 
-'''
 
-'''
 @app.route('/topsongs')
 def get_topsongs():
     # Get top 10 songs started the last week
@@ -83,15 +75,6 @@ def get_topsongs():
         topsongs.append(json.dumps(data))
 
 
-    #name = ""
-    
-    #for i in results['aggregations']['songs']['buckets']:
-        #name = name + "{ \"song\" : " + i["key"] + ",\n \"plays\" :" + str(i["doc_count"]) + "\n}\n"
-    
-
-
-    #return results['aggregations']['songs']['buckets'][0]['key']
-    #return "{ \"song\" : " + str(results['aggregations']['songs']['buckets'][0]["doc_count"]) + ",\n \"plays\" :" + "\n}"
     return str(topsongs)
 
 if __name__ == '__main__':
