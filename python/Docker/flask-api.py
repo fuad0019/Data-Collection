@@ -57,6 +57,38 @@ def get_history(userid):
     
 
 
+@app.route('/amountPlayedBy/<user>/<song>')
+def amountPlayedBy(user, song):
+    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": { 
+        "bool": { 
+        "must": [
+            { "match":  {"user": user}},
+            { "match":  { "song":   song  }}]}}})
+    x = results['hits'].get("total").get("value")
+    amountPlays = []
+    plays = {
+           "plays": x
+        }
+    amountPlays.append(json.dumps(plays))
+
+    return str(amountPlays)
+
+#http://192.168.136.61:5000/amountPlayedBy/70d55e01-d179-4612-8fb9-77138b0569e8/Suggest spring
+
+@app.route('/amountPlayed/<song>')
+def amountPlayed(song):
+    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": { 
+        "bool": { 
+        "must": [
+            { "match":  { "song":   song  }}]}}})
+    x = results['hits'].get("total").get("value")
+    amountPlays = []
+    plays = {
+           "plays": x
+        }
+    amountPlays.append(json.dumps(plays))
+
+    return str(amountPlays)
 
 @app.route('/topsongs')
 def get_topsongs():
