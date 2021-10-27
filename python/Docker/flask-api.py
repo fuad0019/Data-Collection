@@ -3,6 +3,9 @@ from flask import Flask, jsonify
 from markupsafe import escape
 from elasticsearch import Elasticsearch
 import json
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
+
 
 
 elastic = Elasticsearch(hosts=["192.168.136.34"])
@@ -15,13 +18,27 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET']) # Define http method
 def home():
-    return 'It still lives!'
+    return 'It stillsdfsdf lives!'
 
-@app.route('/users/<username>')
-def get_user_profile(username):
+@app.route('/users/<id>')
+def get_user_profile(id):
     # Get a user profile
-    results = elastic.search(index="users", doc_type="_doc", body={"query": {"match":{"name": username}}})
-    return results['hits']
+    results = elastic.search(index="users", doc_type="_doc", body={"query": {"match":{"_id": id}}}, size=1)
+    userData = []
+    for i in results['hits'].get("hits"):
+        dateString = i['_source']["dob"]
+        dob = datetime.strptime(dateString,'%Y-%m-%d')
+
+        data = {
+            "Name": i['_source']["name"],
+            "E-mail": i['_source']["email"],
+            "Gender": i['_source']["gender"],
+            "Country": i['_source']["country"],
+            "Age": str(relativedelta(datetime.today(),dob).years)
+        }
+        userData.append(json.dumps(data))
+
+    return str(userData)
 
     
     
