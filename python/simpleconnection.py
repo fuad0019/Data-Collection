@@ -116,7 +116,7 @@ if __name__ == '__main__':
     days = 14
     n = 300*10*14
 
-    fa
+    
 
     print("Indexing events...")
     progress = tqdm.tqdm(unit="events", total=int(n+n/100+n/5+n/5+len(users))) 
