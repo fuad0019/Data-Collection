@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 
 
 
-elastic = Elasticsearch(hosts=["192.168.136.34"])
+elastic = Elasticsearch(hosts=["elasticsearch"])
 
 
 # This sets up the application using the Flask object from the package flask.
