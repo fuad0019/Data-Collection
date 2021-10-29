@@ -2,21 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: team05
-  name: api
+  name: t05-api
   labels:
-    app: api
+    app: t05-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api
+      app: t05-api
   template:
     metadata:
       labels:
-        app: api
+        app: t05-api
     spec:
       containers:
-      - name: api
+      - name: t05-api
         image: fujam20/api
         ports:
         - containerPort: 5000
@@ -24,11 +24,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: api
+  name: t05-api
 spec: 
   type: ClusterIP
   selector:
-    app: api
+    app: t05-api
   ports:
     - protocol: TCP
       port: 5000

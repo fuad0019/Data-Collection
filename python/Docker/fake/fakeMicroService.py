@@ -4,6 +4,10 @@ import time
 import ast
 import os
 from datetime import datetime
+from generator import *
+from faker import Factory
+
+
 log = "fake.log"
 
 id = 0 
@@ -18,16 +22,45 @@ if os.path.exists(log):
             if entry['id']:
                 id = entry['id']+1
 
-logging.basicConfig(filename=log, filemode="w", level=logging.DEBUG) # filemode w for overwriting whole file, filemode a for appending
+# filemode w for overwriting whole file, filemode a for appending
+#logging.basicConfig(filename=log, filemode="w", level=logging.DEBUG) 
+
+#The logger module called "logging" logs everything even the imported modules like faker, basically a global logger.
+# So in order to get a logger that only logs this module and ignores the imported modules, a custom logger is created like under:
+logger = logging.getLogger("event_logger")
+handler = logging.FileHandler('log.log')
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
+
+fake = Factory.create()
+users = generate_users(fake,5)
+songs = generate_songs(fake,10)
+days = 14
+n = 10*10*14
+
 
 while True:
     time.sleep(random.randint(1,6))
 
-    entry = {
-        "timestamp": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-        "id": id,
-        "random": random.randint(1,1000)
-    }
+    
+    #The following code can probably be optimized. Feel free to do so!
+    
+    switch = random.randint(1,5)
+    fake = Factory.create()
+    
+    if switch == 1:
+          entry = generate_songStarted(fake,users,songs,days,n)
+    elif switch == 2:
+        entry = generate_songSkipped(fake,users,songs,days,n)
+    elif switch == 3:
+        entry = generate_songPausedAndUnpaused(fake,users,songs,days,n)
+    elif switch == 4:
+        entry = generate_userIndex(fake,users,days)
+    elif switch == 5:
+        entry = generate_searchQueries(fake,users,days,n)
+
+    
     print(entry)
-    logging.info(entry)
+    #logging.info(entry)
+    logger.info(entry)
     id += 1

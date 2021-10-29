@@ -2,19 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: team05
-  name: fakemicroservice
+  name: t05-fakemicroservice
   labels:
-    app: fakemicroservice
+    app: t05-fakemicroservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: fakemicroservice
+      app: t05-fakemicroservice
   template:
     metadata:
       labels:
-        app: fakemicroservice
+        app: t05-fakemicroservice
     spec:
       containers:
-      - name: fakemicroservice
+      - name: t05-fakemicroservice
         image: fujam20/fakemicroservice

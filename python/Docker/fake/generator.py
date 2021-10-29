@@ -1,16 +1,8 @@
 #https://github.com/ruanbekker/data-generation-scripts/blob/master/generate-random-data-into-elasticsearch.py
 #https://github.com/elastic/elasticsearch-py/blob/main/examples/bulk-ingest/bulk-ingest.py
-from faker import Factory
-from datetime import datetime
-from elasticsearch import Elasticsearch
-from elasticsearch.helpers import streaming_bulk
 import uuid
-
 import random
-import json
 
-esDomainEndpoint = "http://192.168.136.34:9200"
-client = Elasticsearch(esDomainEndpoint)
 
 
 
@@ -25,7 +17,8 @@ def generate_users(fake, n):
             "name": name,
             "email": fake.ascii_email(),
             "gender": random.choice(gender),
-            "country": fake.country()
+            "country": fake.country(),
+            "dob": fake.date_between(start_date='-60y', end_date='-10y')
         })
         
     return users
@@ -49,7 +42,7 @@ def generate_songStarted(fake,users,songs,days,n):
                 "timestamp": genTimestamp
             }
 
-        print( doc) 
+        return doc
 
 def generate_songSkipped(fake,users,songs,days,n):
     for _ in range(n):
@@ -63,7 +56,7 @@ def generate_songSkipped(fake,users,songs,days,n):
                 "duration": random.randint(0,20)
             }
 
-        yield doc
+        return doc
 
 def generate_songPausedAndUnpaused(fake,users,songs,days,n):
     for _ in range(n):
@@ -77,7 +70,7 @@ def generate_songPausedAndUnpaused(fake,users,songs,days,n):
                 "duration": random.randint(0,180)
             }
 
-        yield doc
+        return doc
 
 def generate_searchQueries(fake,users,days,n):
     for _ in range(n):
@@ -90,7 +83,7 @@ def generate_searchQueries(fake,users,days,n):
                 "timestamp": genTimestamp
             }
 
-        yield doc
+        return doc
 
 
 def generate_userIndex(fake,users,days):
@@ -103,19 +96,8 @@ def generate_userIndex(fake,users,days):
                 "email": user["email"],
                 "gender": user["gender"],
                 "country": user["country"],
+                "dob":user["dob"],
                 "timestamp": genTimestamp
             }
 
-        yield doc
-
-
-if __name__ == '__main__':
-    fake = Factory.create()
-    songs = generate_songs(fake, 2)
-    users = generate_users(fake, 5)
-    days = 14
-    n = 5*10*14
-    generate_songStarted(fake,users,songs,days,n)
- 
-
-    
+        return doc

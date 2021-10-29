@@ -1,41 +1,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kibana
+  name: t05-kibana
+  namespace: team05
   labels:
-    app: kibana
+    app: t05-kibana
 spec:
   selector:
     matchLabels:
-      app: kibana
+      app: t05-kibana
   replicas: 1
   template:
     metadata:
       labels:
-        app: kibana
+        app: t05-kibana
     spec:
       containers:
-      - name: kibana
+      - name: t05-kibana
         image: kibana:7.9.1
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5601
         env:
         - name: ELASTICSEARCH_URL
-          value: "http://elasticsearch:9200"
+          value: "http://t05-elasticsearch:9200"
         - name: ELASTICSEARCH_HOSTS
-          value: "http://elasticsearch:9200"
+          value: "http://t05-elasticsearch:9200"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: kibana
+  name: t05-kibana
   namespace: team05
   labels:
-    app: kibana
+    app: t05-kibana
 spec:
   selector:
-    app: kibana
+    app: t05-kibana
   ports:
     - protocol: TCP
       name: http

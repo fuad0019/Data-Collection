@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: es-cluster
+  name: t05-es-cluster
   namespace: team05
 spec:
-  serviceName: elasticsearch
+  serviceName: t05-elasticsearch
   replicas: 1 #change this for more pod instances
   selector:
     matchLabels:
-      app: elasticsearch
+      app: t05-elasticsearch
   template:
     metadata:
       labels:
-        app: elasticsearch
+        app: t05-elasticsearch
     spec:
       containers:
-      - name: elasticsearch
+      - name: t05-elasticsearch
         image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
         resources:
             limits:
@@ -34,15 +34,15 @@ spec:
           mountPath: /usr/share/elasticsearch/data
         env:
           - name: cluster.name
-            value: k8s-logs
+            value: t05-elasticsearch
           - name: node.name
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
           - name: discovery.seed_hosts
-            value: "es-cluster-0.elasticsearch" # add these for pr. replica es-cluster-1.elasticsearch,es-cluster-2.elasticsearch
+            value: "t05-es-cluster-0.t05-elasticsearch" # add these for pr. replica es-cluster-1.elasticsearch,es-cluster-2.elasticsearch
           - name: cluster.initial_master_nodes
-            value: "es-cluster-0" # add these for pr. replica es-cluster-1,es-cluster-2
+            value: "t05-es-cluster-0" # add these for pr. replica es-cluster-1,es-cluster-2
           - name: ES_JAVA_OPTS
             value: "-Xms512m -Xmx512m"
       initContainers:
@@ -68,25 +68,25 @@ spec:
   - metadata:
       name: data
       labels:
-        app: elasticsearch
+        app: t05-elasticsearch
     spec:
-      accessModes: [ "ReadWriteOnce" ]
-      #storageClassName: do-block-storage // Storage class currently unknown, using default
+      accessModes: [ "ReadWriteOnce" ] #storage class will give an error if not set on kubernetes cluster
+      #storageClassName: local-storage # Storage class currently unknown, using default
       resources:
         requests:
-          storage: 400M #change this for more persistence storage. Was 100Gi before.
+          storage: 100M #change this for more persistence storage. Was 100Gi before.
 
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: elasticsearch
+  name: t05-elasticsearch
   namespace: team05
   labels:
-    app: elasticsearch
+    app: t05-elasticsearch
 spec:
   selector:
-    app: elasticsearch
+    app: t05-elasticsearch
   clusterIP: None
   ports:
     - port: 9200

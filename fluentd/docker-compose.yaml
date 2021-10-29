@@ -10,3 +10,4 @@ services:
     - ./logs:/output/
     logging:
       driver: "local"
+
