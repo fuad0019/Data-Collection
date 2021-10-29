@@ -5,7 +5,7 @@ metadata:
   namespace: team05
 spec:
   serviceName: t05-elasticsearch
-  replicas: 1 #change this for more pod instances
+  replicas: 3 #change this for more pod instances
   selector:
     matchLabels:
       app: t05-elasticsearch
@@ -40,9 +40,9 @@ spec:
               fieldRef:
                 fieldPath: metadata.name
           - name: discovery.seed_hosts
-            value: "t05-es-cluster-0.t05-elasticsearch" # add these for pr. replica es-cluster-1.elasticsearch,es-cluster-2.elasticsearch
+            value: "t05-es-cluster-0.t05-elasticsearch,t05-es-cluster-1.t05-elasticsearch,t05-es-cluster-2.t05-elasticsearch"
           - name: cluster.initial_master_nodes
-            value: "t05-es-cluster-0" # add these for pr. replica es-cluster-1,es-cluster-2
+            value: "t05-es-cluster-0,t05-es-cluster-1,t05-es-cluster-2"
           - name: ES_JAVA_OPTS
             value: "-Xms512m -Xmx512m"
       initContainers:
