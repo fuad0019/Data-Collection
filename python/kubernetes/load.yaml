@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: team05
+  name: t05-apisimple
+  labels:
+    app: t05-apisimple
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t05-apisimple
+  template:
+    metadata:
+      labels:
+        app: t05-apisimple
+    spec:
+      containers:
+      - name: t05-apisimple
+        image: fujam20/simple

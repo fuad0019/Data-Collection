@@ -55,7 +55,18 @@ def get_history(userid):
         userHistory.append(json.dumps(data))
     return str(userHistory)
     
+@app.route('/searchhistory/<userid>')
+def get_searchhistory(userid):
+    results = elastic.search(index="search", doc_type="_doc", body={"query": {"match":{"user": userid}}})
 
+    userSearchHistory = []
+    for i in results['hits'].get("hits"):
+        data = {
+            "searchterm": i['_source']["searchterm"],
+            "timestamp": i['_source']["timestamp"]
+        }
+        userSearchHistory.append(json.dumps(data))
+    return str(userSearchHistory)
 
 @app.route('/amountPlayedBy/<user>/<song>')
 def amountPlayedBy(user, song):
@@ -90,6 +101,21 @@ def amountPlayed(song):
 
     return str(amountPlays)
 
+    @app.route('/amountArtistPlayed/<artist>')
+    def amountPlayed(artist):
+        results = elastic.search(index="songstarted", doc_type="_doc", body={"query": { 
+            "bool": { 
+            "must": [
+                { "match":  { "artist":   artist  }}]}}})
+        x = results['hits'].get("total").get("value")
+        amountPlays = []
+        plays = {
+            "plays": x
+            }
+        amountPlays.append(json.dumps(plays))
+
+        return str(amountPlays)
+
 @app.route('/topsongs')
 def get_topsongs():
     # Get top 10 songs started the last week
@@ -106,8 +132,25 @@ def get_topsongs():
         }
         topsongs.append(json.dumps(data))
 
-
     return str(topsongs)
+
+@app.route('/topartists')
+def get_topartists():
+    # Get top 10 artists the last week
+    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    "bool": {
+      "filter":
+        { "range": { "timestamp": { "gte": "now-7d/d", "lt": "now/d" }}}}}, "aggs": {"artists": {"terms": {"field": "artist", "size": 10}}}})
+    
+    topartists = []
+    for i in results['aggregations']['artists']['buckets']:
+        data = {
+            "artist": i["key"],
+            "plays": i["doc_count"]
+        }
+        topartists.append(json.dumps(data))
+
+    return str(topartists)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

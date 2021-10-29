@@ -1,6 +1,8 @@
 #https://github.com/ruanbekker/data-generation-scripts/blob/master/generate-random-data-into-elasticsearch.py
 #https://github.com/elastic/elasticsearch-py/blob/main/examples/bulk-ingest/bulk-ingest.py
 from faker import Factory
+from faker import Faker
+from faker_music import MusicProvider
 from datetime import datetime
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
@@ -9,7 +11,7 @@ import tqdm
 import random
 import json
 
-esDomainEndpoint = "http://192.168.136.34:9200"
+esDomainEndpoint = "http://t05-elasticsearch:9200"
 client = Elasticsearch(esDomainEndpoint)
 
 
@@ -32,11 +34,18 @@ def generate_users(fake, n):
     return users
     
 
-def generate_songs(fake, n):
+def generate_songs(n):
+    fake = Faker()
+    fake.add_provider(MusicProvider)
     songs = []
     for _ in range(n):
         genSong = fake.text(max_nb_chars=20)[:-1]
-        songs.append(genSong)
+        songs.append({
+            "_id": uuid.uuid4(),
+            "title": genSong,
+            "genre": fake.music_genre(),
+            "artist": fake.name()
+        })
     return songs
 
 def generate_songStarted(fake,users,songs,days,n):
@@ -113,8 +122,8 @@ def generate_userIndex(fake,users,days):
 
 if __name__ == '__main__':
     fake = Factory.create()
-    songs = generate_songs(fake, 50)
-    users = generate_users(fake, 300)
+    songs = generate_songs(50)
+    users = generate_users(fake,300)
     days = 14
     n = 300*10*14
 

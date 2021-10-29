@@ -2,6 +2,9 @@
 #https://github.com/elastic/elasticsearch-py/blob/main/examples/bulk-ingest/bulk-ingest.py
 import uuid
 import random
+from faker import Faker
+from faker_music import MusicProvider
+
 
 
 
@@ -24,11 +27,18 @@ def generate_users(fake, n):
     return users
     
 
-def generate_songs(fake, n):
+def generate_songs(n):
+    fake = Faker()
+    fake.add_provider(MusicProvider)
     songs = []
     for _ in range(n):
         genSong = fake.text(max_nb_chars=20)[:-1]
-        songs.append(genSong)
+        songs.append({
+            "_id": str(uuid.uuid4()),
+            "title": fake.name(),
+            "genre": fake.music_genre(),
+            "artist": fake.name()
+        })
     return songs
 
 def generate_songStarted(fake,users,songs,days,n):

@@ -3,9 +3,11 @@ import random
 import time
 import ast
 import os
+import json
 from datetime import datetime
 from generator import *
 from faker import Factory
+
 
 
 log = "fake.log"
@@ -18,7 +20,7 @@ if os.path.exists(log):
         if len(lines) > 0:
             last_line = lines[len(lines)-1]
             stripped_line = last_line[last_line.find('{'):]
-            entry = ast.literal_eval(stripped_line) # Convert line to dictionary
+            entry = json.loads(stripped_line) # Convert line to dictionary
             if entry['id']:
                 id = entry['id']+1
 
@@ -34,7 +36,7 @@ logger.setLevel(logging.DEBUG)
 
 fake = Factory.create()
 users = generate_users(fake,5)
-songs = generate_songs(fake,10)
+songs = generate_songs(10)
 days = 14
 n = 10*10*14
 
@@ -59,7 +61,7 @@ while True:
     elif switch == 5:
         entry = generate_searchQueries(fake,users,days,n)
 
-    
+    entry = json.dumps(entry)
     print(entry)
     #logging.info(entry)
     logger.info(entry)
