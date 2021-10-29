@@ -1,5 +1,4 @@
-FROM python:3
-RUN apt update
+FROM python:3-alpine
 RUN pip install flask
 RUN pip install markupsafe
 RUN pip install elasticsearch
