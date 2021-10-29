@@ -21,3 +21,10 @@
 {'_id': 'represent-only', 'user': UUID('8d380509-4848-40ef-8fc2-99a88c218aa2'), 'song': 'Stage out really', 'timestamp': datetime.datetime(2021, 10, 17, 14, 24, 57)}
 {'_id': 'back-phone', 'user': UUID('c689ff65-c232-429d-b782-604d0169cced'), 'song': 'Toward around water', 'timestamp': datetime.datetime(2021, 10, 19, 17, 28, 34), 'duration': 9}
 {'_id': UUID('e512ea38-ed18-43cd-8a00-befb48c49c16'), 'name': 'Jean Cummings', 'email': 'gillespiejason@hotmail.com', 'gender': 'female', 'country': 'Saint Martin', 'dob': datetime.date(2002, 8, 12), 'timestamp': datetime.datetime(2021, 10, 17, 11, 18, 43)}
+{'_id': 'who-accept-look', 'user': UUID('53422b8d-bc9c-4b61-87d8-0b1833f60258'), 'song': 'So should key', 'timestamp': datetime.datetime(2021, 10, 21, 0, 19, 18), 'duration': 56}
+{'_id': 'good-cultural-me', 'user': UUID('9dd5b4d0-ab6d-4e3c-b82c-722558061cdc'), 'song': 'Involve away catch', 'timestamp': '2021-10-24T02:01:06'}
+{'_id': UUID('e40b535a-0c50-491e-bb8f-b6133a145d71'), 'name': 'James Harmon', 'email': 'ryanmiller@yahoo.com', 'gender': 'male', 'country': 'Zambia', 'dob': '1985-01-01', 'timestamp': '2021-10-25T11:16:21'}
+{'_id': 'word-address-upon', 'user': UUID('873f32c1-066e-410b-9014-ba6bede81c7e'), 'searchterm': 'Southern painting', 'timestamp': '2021-10-29T05:41:53'}
+{'_id': UUID('e40b535a-0c50-491e-bb8f-b6133a145d71'), 'name': 'James Harmon', 'email': 'ryanmiller@yahoo.com', 'gender': 'male', 'country': 'Zambia', 'dob': '1985-01-01', 'timestamp': '2021-10-27T12:06:51'}
+{'_id': 'traditional-police', 'user': 'c9df45eb-b372-45c0-a478-9d561c83e0ac', 'song': 'Machine model rock', 'timestamp': '2021-10-16T10:39:44', 'duration': 158}
+{'_id': 'ba4ef70f-8234-47d8-8d86-89ddb4cb7368', 'name': 'Joel Mueller', 'email': 'reyesbianca@yahoo.com', 'gender': 'other', 'country': 'Azerbaijan', 'dob': '1979-05-05', 'timestamp': '2021-10-25T21:02:39'}
