@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: team05
+  name: t05-fake-temp
+  labels:
+    app: t05-fake-temp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t05-fake-temp
+  template:
+    metadata:
+      labels:
+        app: t05-fake-temp
+    spec:
+      containers:
+      - name: t05-fake-temp
+        image: fujam20/fake_temp
