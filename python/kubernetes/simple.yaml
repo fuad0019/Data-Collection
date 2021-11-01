@@ -1,20 +1,18 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
   namespace: team05
   name: t05-apisimple
   labels:
     app: t05-apisimple
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: t05-apisimple
   template:
     metadata:
       labels:
         app: t05-apisimple
     spec:
+      #https://stackoverflow.com/questions/40530946/what-is-the-difference-between-always-and-on-failure-for-kubernetes-restart-poli
+      restartPolicy: Never
       containers:
       - name: t05-apisimple
         image: fujam20/simple

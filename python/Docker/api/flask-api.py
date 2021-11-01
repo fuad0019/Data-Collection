@@ -7,8 +7,7 @@ from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
 
-
-elastic = Elasticsearch(host = "t05-elasticsearch")
+elastic = Elasticsearch(host="t05-elasticsearch")
 
 # This sets up the application using the Flask object from the package flask.
 app = Flask(__name__)
@@ -22,7 +21,8 @@ def home():
 @app.route('/users/<id>')
 def get_user_profile(id):
     # Get a user profile
-    results = elastic.search(index="users", doc_type="_doc", body={"query": {"match": {"_id": id}}}, size=1)
+    results = elastic.search(index="users", doc_type="_doc", body={
+                             "query": {"match": {"_id": id}}}, size=1)
     userData = []
     for i in results['hits'].get("hits"):
         dateString = i['_source']["dob"]
@@ -42,9 +42,10 @@ def get_user_profile(id):
 
 # http://192.168.136.61:5000/history/41c6e6d7-b78c-413f-adb3-0567aa4996ef
 
-@app.route('/history/<userid>')
-def get_history(userid):
-    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {"match": {"user": userid}}})
+@app.route('/users/<id>/songs')
+def get_history(id):
+    results = elastic.search(index="songstarted", doc_type="_doc", body={
+                             "query": {"match": {"user": id}}})
 
     userHistory = []
     for i in results['hits'].get("hits"):
@@ -56,9 +57,10 @@ def get_history(userid):
     return str(userHistory)
 
 
-@app.route('/searchhistory/<userid>')
-def get_search_history(userid):
-    results = elastic.search(index="search", doc_type="_doc", body={"query": {"match": {"user": userid}}})
+@app.route('/users/<id>/searches')
+def get_search_history(id):
+    results = elastic.search(index="searchqueries", doc_type="_doc", body={
+                             "query": {"match": {"user": id}}})
 
     userSearchHistory = []
     for i in results['hits'].get("hits"):
@@ -70,13 +72,18 @@ def get_search_history(userid):
     return str(userSearchHistory)
 
 
-@app.route('/amountSongPlayedBy/<user>/<song>')
+@app.route('/users/<user>/songs/<song>/amount_played')
 def amount_song_played_by_user(user, song):
     results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {"user": user}},
-                {"match": {"song.title.keyword": song}}]}}})
+                {"match": {"song._id.keyword": song}}    
+                ]
+        }
+    }
+    }
+    )
     x = results['hits'].get("total").get("value")
     amountPlays = []
     plays = {
@@ -87,7 +94,7 @@ def amount_song_played_by_user(user, song):
     return str(amountPlays)
 
 
-@app.route('/amountArtistPlayedBy/<user>/<artist>')
+@app.route('/users/<user>/artists/<artist>/amount_played')
 def amount_artist_played_by_user(user, artist):
     results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
         "bool": {
@@ -104,12 +111,12 @@ def amount_artist_played_by_user(user, artist):
     return str(amountPlays)
 
 
-@app.route('/amountSongPlayed/<song>')
-def amount_song_played(song):
+@app.route('/songs/<id>/amount_played')
+def amount_song_played(id):
     results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
-                {"match": {"song.title.keyword": song}}]}}})
+                {"match": {"song._id.keyword": id}}]}}})
     x = results['hits'].get("total").get("value")
     amountPlays = []
     plays = {
@@ -120,12 +127,12 @@ def amount_song_played(song):
     return str(amountPlays)
 
 
-@app.route('/amountArtistPlayed/<artist>')
-def artist_amount_played(artist):
+@app.route('/artists/<id>/amount_played')
+def artist_amount_played(id):
     results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
-                {"match": {"song.artist.keyword": artist}}]}}})
+                {"match": {"song.artist.keyword": id}}]}}})
     x = results['hits'].get("total").get("value")
     amountPlays = []
     plays = {
@@ -136,7 +143,7 @@ def artist_amount_played(artist):
     return str(amountPlays)
 
 
-@app.route('/topsongs')
+@app.route('/songs/top')
 def get_top_songs():
     # Get top 10 songs started the last week
     results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
@@ -156,7 +163,7 @@ def get_top_songs():
     return str(topsongs)
 
 
-@app.route('/topartists')
+@app.route('/artists/top')
 def get_top_artists():
     # Get top 10 artists the last week
     results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
@@ -176,13 +183,13 @@ def get_top_artists():
     return str(topartists)
 
 
-@app.route('/topArtistsForUser/<user>')
-def get_top_artist_for_user(user):
+@app.route('/users/<id>/artists/top')
+def get_top_artist_for_user(id):
     results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
-                    "user": user
+                    "user": id
                 }}
             ]
         }
@@ -198,13 +205,14 @@ def get_top_artist_for_user(user):
 
     return str(topartists)
 
-@app.route('/topSongsForUser/<user>')
-def get_top_songs_for_user(user):
+
+@app.route('/users/<id>/songs/top')
+def get_top_songs_for_user(id):
     results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
-                    "user": user
+                    "user": id
                 }}
             ]
         }
@@ -220,13 +228,14 @@ def get_top_songs_for_user(user):
 
     return str(topartists)
 
-@app.route('/topGenresForUser/<user>')
-def get_top_genres_for_user(user):
+
+@app.route('/users/<id>/genres/top')
+def get_top_genres_for_user(id):
     results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
-                    "user": user
+                    "user": id
                 }}
             ]
         }
