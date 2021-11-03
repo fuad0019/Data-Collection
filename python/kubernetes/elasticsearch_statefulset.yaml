@@ -71,7 +71,7 @@ spec:
         app: t05-elasticsearch
     spec:
       accessModes: [ "ReadWriteOnce" ] #storage class will give an error if not set on kubernetes cluster
-      #storageClassName: local-storage # Storage class currently unknown, using default
+      storageClassName: longhorn # Storage class currently unknown, using default
       resources:
         requests:
           storage: 100M #change this for more persistence storage. Was 100Gi before.
