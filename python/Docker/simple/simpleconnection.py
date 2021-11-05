@@ -6,6 +6,7 @@ from faker_music import MusicProvider
 from datetime import datetime
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
+from dateutil.relativedelta import relativedelta
 import uuid
 import tqdm
 import random
@@ -15,23 +16,25 @@ esDomainEndpoint = "http://t05-elasticsearch:9200"
 client = Elasticsearch(esDomainEndpoint)
 
 
-
 def generate_users(fake, n):
-    #https://www.w3schools.com/python/python_dictionaries.asp
+    # https://www.w3schools.com/python/python_dictionaries.asp
     gender = ['male', 'female', 'other']
     users = []
     for _ in range(n):
         name = fake.name()
+        dob = fake.date_between(start_date='-60y', end_date='-10y')
         users.append({
             "_id": uuid.uuid4(),
             "name": name,
             "email": fake.ascii_email(),
             "gender": random.choice(gender),
             "country": fake.country(),
-            "dob": fake.date_between(start_date='-60y', end_date='-10y')
+            "dob": dob,
+            "age": str(relativedelta(datetime.today(), dob).years)
         })
-        
+
     return users
+
     
 
 def generate_songs(n):
