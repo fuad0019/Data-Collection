@@ -24,12 +24,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: t05-api
+  name: service01
 spec: 
   type: ClusterIP
   selector:
     app: t05-api
   ports:
     - protocol: TCP
-      port: 5000
+      port: 80
       targetPort: 5000

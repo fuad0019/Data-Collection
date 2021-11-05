@@ -8,50 +8,46 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 
+fake = Faker()
 
 
-
-def generate_users(fake, n):
+def generate_userCreated(days):
     #https://www.w3schools.com/python/python_dictionaries.asp
     gender = ['male', 'female', 'other']
-    users = []
+    genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
     dob = fake.date_between(start_date='-60y', end_date='-10y').isoformat()
-    for _ in range(n):
-        name = fake.name()
-        users.append({
+    name = fake.name()
+    doc = {
             "_id": str(uuid.uuid4()),
             "name": name,
             "email": fake.ascii_email(),
             "gender": random.choice(gender),
             "country": fake.country(),
             "dob": dob,
-            "age": str(relativedelta(datetime.today(), dob).years)
-
-        })
+            "age": str(relativedelta(datetime.today(), dob).years),
+            "timestamp": genTimestamp
+        }
         
-    return users
+    return doc
     
 
 def generate_songs(n):
-    fake = Faker()
+    
     fake.add_provider(MusicProvider)
     songs = []
     for _ in range(n):
         genSong = fake.text(max_nb_chars=20)[:-1]
         songs.append({
             "_id": str(uuid.uuid4()),
-            "title": fake.name(),
+            "title": genSong,
             "genre": fake.music_genre(),
             "artist": fake.name()
         })
     return songs
 
-def generate_songStarted(fake,users,songs,days,n):
-    for _ in range(n):
-        genUname = fake.slug()
+def generate_songStarted(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
-                "_id": genUname,
                 "user": random.choice(users)["_id"],
                 "song": random.choice(songs),
                 "timestamp": genTimestamp
@@ -59,12 +55,9 @@ def generate_songStarted(fake,users,songs,days,n):
 
         return doc
 
-def generate_songSkipped(fake,users,songs,days,n):
-    for _ in range(n):
-        genUname = fake.slug()
+def generate_songSkipped(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
-                "_id": genUname,
                 "user": random.choice(users)["_id"],
                 "song": random.choice(songs),
                 "timestamp": genTimestamp,
@@ -73,12 +66,9 @@ def generate_songSkipped(fake,users,songs,days,n):
 
         return doc
 
-def generate_songPausedAndUnpaused(fake,users,songs,days,n):
-    for _ in range(n):
-        genUname = fake.slug()
+def generate_songPausedAndUnpaused(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
-                "_id": genUname,
                 "user": random.choice(users)["_id"],
                 "song": random.choice(songs),
                 "timestamp": genTimestamp,
@@ -87,12 +77,9 @@ def generate_songPausedAndUnpaused(fake,users,songs,days,n):
 
         return doc
 
-def generate_searchQueries(fake,users,days,n):
-    for _ in range(n):
-        genUname = fake.slug()
+def generate_searchQueries(users,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
-                "_id": genUname,
                 "user": random.choice(users)["_id"],
                 "searchterm": fake.text(max_nb_chars=20)[:-1],
                 "timestamp": genTimestamp
@@ -101,19 +88,3 @@ def generate_searchQueries(fake,users,days,n):
         return doc
 
 
-def generate_userIndex(fake,users,days):
-   
-   for user in users:
-        genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
-        doc ={
-                "_id": user["_id"],
-                "name": user["name"],
-                "email": user["email"],
-                "gender": user["gender"],
-                "country": user["country"],
-                "dob":user["dob"],
-                "timestamp": genTimestamp,
-                "age": user["age"]
-            }
-
-        return doc

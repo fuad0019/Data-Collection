@@ -6,10 +6,10 @@ from faker import Faker
 from faker_music import MusicProvider
 
 
+fake = Faker()
 
 
-
-def generate_users(fake, n):
+def generate_users(n):
     #https://www.w3schools.com/python/python_dictionaries.asp
     gender = ['male', 'female', 'other']
     users = []
@@ -28,7 +28,7 @@ def generate_users(fake, n):
     
 
 def generate_songs(n):
-    fake = Faker()
+    
     fake.add_provider(MusicProvider)
     songs = []
     for _ in range(n):
@@ -41,9 +41,7 @@ def generate_songs(n):
         })
     return songs
 
-def generate_songStarted(fake,users,songs,days,n):
-    for _ in range(n):
-        genUname = fake.slug()
+def generate_songStarted(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
                 "user": random.choice(users)["_id"],
@@ -53,9 +51,7 @@ def generate_songStarted(fake,users,songs,days,n):
 
         return doc
 
-def generate_songSkipped(fake,users,songs,days,n):
-    for _ in range(n):
-        genUname = fake.slug()
+def generate_songSkipped(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
                 "user": random.choice(users)["_id"],
@@ -66,9 +62,7 @@ def generate_songSkipped(fake,users,songs,days,n):
 
         return doc
 
-def generate_songPausedAndUnpaused(fake,users,songs,days,n):
-    for _ in range(n):
-        genUname = fake.slug()
+def generate_songPausedAndUnpaused(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
                 "user": random.choice(users)["_id"],
@@ -79,9 +73,7 @@ def generate_songPausedAndUnpaused(fake,users,songs,days,n):
 
         return doc
 
-def generate_searchQueries(fake,users,days,n):
-    for _ in range(n):
-        genUname = fake.slug()
+def generate_searchQueries(users,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
                 "user": random.choice(users)["_id"],
@@ -92,17 +84,20 @@ def generate_searchQueries(fake,users,days,n):
         return doc
 
 
-def generate_userIndex(fake,users,days):
-   
-   for user in users:
+def generate_userIndex(users,days):
+
+
+    for user in users:
+
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
-                "name": user["name"],
-                "email": user["email"],
-                "gender": user["gender"],
-                "country": user["country"],
-                "dob":user["dob"],
-                "timestamp": genTimestamp
-            }
+                    "_id": user["_id"],
+                    "name": user["name"],
+                    "email": user["email"],
+                    "gender": user["gender"],
+                    "country": user["country"],
+                    "dob":user["dob"],
+                    "timestamp": genTimestamp
+                }
 
-        return doc
+        yield doc

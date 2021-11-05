@@ -1,12 +1,10 @@
 import logging
 import random
 import time
-import ast
 import os
 import json
 from datetime import datetime
 from generator import *
-from faker import Factory
 
 
 
@@ -34,13 +32,22 @@ handler = logging.FileHandler('log.log')
 logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
 
-fake = Factory.create()
-users = generate_users(fake,5)
-songs = generate_songs(10)
 days = 14
 n = 10*10*14
+songs = generate_songs(10)
 
+#Creates some initial "user created" events first and logs them
+users = []
+for _ in range(5):
+    user = generate_userCreated(days)
+    users.append(user) 
+    user = json.dumps(user)
+    print(user)
+    logger.info(user)
 
+    
+
+#Creates events in a loop
 while True:
     time.sleep(random.randint(1,6))
 
@@ -48,18 +55,18 @@ while True:
     #The following code can probably be optimized. Feel free to do so!
     
     switch = random.randint(1,5)
-    fake = Factory.create()
     
     if switch == 1:
-          entry = generate_songStarted(fake,users,songs,days,n)
+          entry = generate_songStarted(users,songs,days)
     elif switch == 2:
-        entry = generate_songSkipped(fake,users,songs,days,n)
+        entry = generate_songSkipped(users,songs,days)
     elif switch == 3:
-        entry = generate_songPausedAndUnpaused(fake,users,songs,days,n)
+        entry = generate_songPausedAndUnpaused(users,songs,days)
     elif switch == 4:
-        entry = generate_userIndex(fake,users,days)
+        entry = generate_userCreated(days)
+        users.append(entry)
     elif switch == 5:
-        entry = generate_searchQueries(fake,users,days,n)
+        entry = generate_searchQueries(users,days)
 
     entry = json.dumps(entry)
     print(entry)
