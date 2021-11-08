@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: team05
+  name: t05-home
+  labels:
+    app: t05-home
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t05-home
+  template:
+    metadata:
+      labels:
+        app: t05-home
+    spec:
+      containers:
+      - name: t05-home
+        image: fujam20/home
+        ports:
+        - containerPort: 5000
+ 
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: development
+spec: 
+  type: ClusterIP
+  selector:
+    app: t05-home
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000

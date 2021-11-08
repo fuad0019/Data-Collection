@@ -1,5 +1,5 @@
 from unicodedata import name
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template  
 from flask.json import dumps
 from markupsafe import escape
 from elasticsearch import Elasticsearch
@@ -16,7 +16,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET'])  # Define http method
 def home():
-    return 'Data Collection API!'
+    return render_template("index.html")
 
 @app.route('/users')
 def getUsers():

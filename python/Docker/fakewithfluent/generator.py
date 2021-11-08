@@ -16,6 +16,7 @@ def generate_userCreated(days):
 
     name = fake.name()
     doc = {
+            "event": "userCreated",
             "_id": str(uuid.uuid4()),
             "name": name,
             "email": fake.ascii_email(),
@@ -45,6 +46,7 @@ def generate_songs(n):
 def generate_songStarted(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
+                "event": "songStarted",
                 "user": random.choice(users)["_id"],
                 "song": random.choice(songs),
                 "timestamp": genTimestamp
@@ -55,6 +57,7 @@ def generate_songStarted(users,songs,days):
 def generate_songSkipped(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
+                "event": "songSkipped",
                 "user": random.choice(users)["_id"],
                 "song": random.choice(songs),
                 "timestamp": genTimestamp,
@@ -65,7 +68,9 @@ def generate_songSkipped(users,songs,days):
 
 def generate_songPausedAndUnpaused(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
+        events = ["songPaused", "songUnpaused"]
         doc ={
+                "event": random.choice(events),
                 "user": random.choice(users)["_id"],
                 "song": random.choice(songs),
                 "timestamp": genTimestamp,
@@ -77,6 +82,7 @@ def generate_songPausedAndUnpaused(users,songs,days):
 def generate_searchQueries(users,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
+                "event": "search",
                 "user": random.choice(users)["_id"],
                 "searchterm": fake.text(max_nb_chars=20)[:-1],
                 "timestamp": genTimestamp

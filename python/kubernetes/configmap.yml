@@ -20,22 +20,23 @@ data:
       tag fakemicroservice.*
       path /var/log/containers/t05-fakemicroservice*.log
       pos_file /var/log/fluentd-containers.log.pos
-      exclude_path ["/var/log/containers/fluent*"]
+      exclude_path ["/var/log/containers/t05-fluent*"]
       <parse>
         @type json
         time_key timestamp
         time_format %iso8601
       </parse>
     </source>
+
     <filter fakemicroservice.**>
       @type parser
       key_name log
-      hash_value_field "log"
-      reserve_data true
       <parse>
         @type json
       </parse> 
     </filter>
+
+ 
    
   pods-fluent.conf: |-
     <source>
@@ -44,7 +45,7 @@ data:
       tag kubernetes.*
       path /var/log/containers/*.log
       pos_file /var/log/fluentd-containers.log.pos
-      exclude_path ["/var/log/containers/fluent*"]
+      exclude_path ["/var/log/containers/t05-fluent*"]
       <parse>
         @type kubernetes
         @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
@@ -63,15 +64,110 @@ data:
       skip_master_url "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_MASTER_URL'] || 'false'}"
       skip_namespace_metadata "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_NAMESPACE_METADATA'] || 'false'}"
     </filter>
+
+
   file-fluent.conf: |-
-    <match **>
-      @type file
-      path /tmp/file-test.log
+    <match fakemicroservice.**>
+      @type rewrite_tag_filter
+      <rule>
+        key $.event
+        pattern ^(.+)$
+        tag $1.${tag}
+      </rule>
     </match>
+
+    <match songStarted.fakemicroservice.**>
+      @type file
+      path /tmp/songStarted.log
+    </match>
+
+     <match songSkipped.fakemicroservice.**>
+      @type file
+      path /tmp/songSkipped.log
+    </match>
+
+    <match songPaused.fakemicroservice.**>
+      @type file
+      path /tmp/songPaused.log
+    </match>
+
+    <match songUnpaused.fakemicroservice.**>
+      @type file
+      path /tmp/songUnpaused.log
+    </match>
+
+    <match search.fakemicroservice.**>
+      @type file
+      path /tmp/search.log
+    </match>
+
+    <match userCreated.fakemicroservice.**>
+      @type file
+      path /tmp/userCreated.log
+    </match>
+
+    <match fluent.**>
+      @type null
+    </match>
+
+   
   elastic-fluent.conf: |-
-    <match **>
+    <match fakemicroservice.**>
+      @type rewrite_tag_filter
+      <rule>
+        key $.event
+        pattern ^(.+)$
+        tag $1.${tag}
+      </rule>
+    </match>
+
+    <match songStarted.fakemicroservice.**>
       @type elasticsearch
       host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
       port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
-      index_name fakemicroservice
+      index_name songStarted
     </match>
+
+    <match songSkipped.fakemicroservice.**>
+      @type elasticsearch
+      host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
+      port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
+      index_name songSkipped
+    </match>
+
+    <match songPaused.fakemicroservice.**>
+      @type elasticsearch
+      host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
+      port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
+      index_name songPaused
+    </match>
+
+    <match songUnpaused.fakemicroservice.**>
+      @type elasticsearch
+      host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
+      port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
+      index_name songUnpaused
+    </match>
+
+    <match search.fakemicroservice.**>
+     @type elasticsearch
+      host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
+      port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
+      index_name search
+    </match>
+
+    <match userCreated.fakemicroservice.**>
+      @type elasticsearch
+      host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
+      port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
+      index_name users
+    </match>
+
+    <match fluent.**>
+      @type null
+    </match>
+    <match fluent.**>
+     @type null
+    </match>
+
+   

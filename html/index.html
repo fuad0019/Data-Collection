@@ -33,9 +33,15 @@
 
     <h2>Streaming Service</h2>
 
+    <video autoplay loop muted poster="rocket.png">
+        <source src="data-vid.mp4" type="video/mp4">
+    </video>
 
     <br>
 
+    <video autoplay loop muted poster="{{url_for('static',filename='rocket.png')}}">
+                <source src="{{url_for('static', filename='data-vid.mp4')}}" type="video/mp4">
+            </video>
 
     <audio id="audioController" controls preload="auto"></audio>
     <br>

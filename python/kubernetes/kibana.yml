@@ -30,10 +30,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: t05-kibana
+  name: service02
   namespace: team05
-  labels:
-    app: t05-kibana
 spec:
   selector:
     app: t05-kibana
