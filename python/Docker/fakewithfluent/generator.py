@@ -4,6 +4,8 @@ import uuid
 import random
 from faker import Faker
 from faker_music import MusicProvider
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 
 fake = Faker()
@@ -13,7 +15,7 @@ def generate_userCreated(days):
     #https://www.w3schools.com/python/python_dictionaries.asp
     gender = ['male', 'female', 'other']
     genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
-
+    dob = fake.date_between(start_date='-60y', end_date='-10y').isoformat()
     name = fake.name()
     doc = {
             "event": "userCreated",
@@ -22,7 +24,8 @@ def generate_userCreated(days):
             "email": fake.ascii_email(),
             "gender": random.choice(gender),
             "country": fake.country(),
-            "dob": fake.date_between(start_date='-60y', end_date='-10y').isoformat(),
+            "dob": dob,
+            "age": str(relativedelta(datetime.today(), dob).years),
             "timestamp": genTimestamp
         }
         
