@@ -106,6 +106,7 @@ def generate_userIndex(users,days):
                     "gender": user["gender"],
                     "country": user["country"],
                     "dob":user["dob"],
+                    "age":user["age"],
                     "timestamp": genTimestamp
                 }
 
