@@ -29,7 +29,7 @@ def generate_users(n,days):
             "gender": random.choice(gender),
             "country": fake.country(),
             "dob": dob,
-            "age": str(relativedelta(datetime.today(), fake.date_between(start_date='-60y', end_date='-10y')).years),
+            "age": str(relativedelta(datetime.today(), dob).years),
             "timestamp": genTimestamp
         })
         
