@@ -11,8 +11,8 @@ data:
     # This source gets all logs from local docker host
     @include pods-kind-fluent.conf
     #@include pods-fluent.conf
-    #@include file-fluent.conf
-    @include elastic-fluent.conf
+    @include file-fluent.conf
+    #@include elastic-fluent.conf
   pods-kind-fluent.conf: |-
     <source>
       @type tail
@@ -68,45 +68,11 @@ data:
 
   file-fluent.conf: |-
     <match fakemicroservice.**>
-      @type rewrite_tag_filter
-      <rule>
-        key $.event
-        pattern ^(.+)$
-        tag $1.${tag}
-      </rule>
-    </match>
-
-    <match songStarted.fakemicroservice.**>
       @type file
-      path /tmp/songStarted.log
+      path /tmp/${record[event]}
     </match>
 
-     <match songSkipped.fakemicroservice.**>
-      @type file
-      path /tmp/songSkipped.log
-    </match>
-
-    <match songPaused.fakemicroservice.**>
-      @type file
-      path /tmp/songPaused.log
-    </match>
-
-    <match songUnpaused.fakemicroservice.**>
-      @type file
-      path /tmp/songUnpaused.log
-    </match>
-
-    <match search.fakemicroservice.**>
-      @type file
-      path /tmp/search.log
-    </match>
-
-    <match userCreated.fakemicroservice.**>
-      @type file
-      path /tmp/userCreated.log
-    </match>
-
-    <match fluent.**>
+    <match fluent.**> 
       @type null
     </match>
 
@@ -166,8 +132,5 @@ data:
     <match fluent.**>
       @type null
     </match>
-    <match fluent.**>
-     @type null
-    </match>
-
+   
    

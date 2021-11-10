@@ -12,10 +12,10 @@ from elasticsearch.helpers import streaming_bulk
 
 es = Elasticsearch("http://t05-elasticsearch:9200")
 
-
-users = generate_users(5)
-songs = generate_songs(10)
 days = 14
+users = generate_users(5, days)
+songs = generate_songs(10)
+
 n = 10*10*14
 
 

@@ -4,28 +4,37 @@ import uuid
 import random
 from faker import Faker
 from faker_music import MusicProvider
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 
 fake = Faker()
 
 
-def generate_users(n):
+def generate_users(n,days):
     #https://www.w3schools.com/python/python_dictionaries.asp
     gender = ['male', 'female', 'other']
     users = []
+    genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
+    dob = fake.date_between(start_date='-60y', end_date='-10y').isoformat()
+    name = fake.name()
+    
     for _ in range(n):
         name = fake.name()
         users.append({
+            "event": "userCreated",
             "_id": str(uuid.uuid4()),
             "name": name,
             "email": fake.ascii_email(),
             "gender": random.choice(gender),
             "country": fake.country(),
-            "dob": fake.date_between(start_date='-60y', end_date='-10y').isoformat()
+            "dob": dob,
+            "age": str(relativedelta(datetime.today(), fake.date_between(start_date='-60y', end_date='-10y')).years),
+            "timestamp": genTimestamp
         })
         
     return users
-    
+
 
 def generate_songs(n):
     
