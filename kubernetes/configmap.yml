@@ -11,8 +11,8 @@ data:
     # This source gets all logs from local docker host
     @include pods-kind-fluent.conf
     #@include pods-fluent.conf
-    @include file-fluent.conf
-    #@include elastic-fluent.conf
+    #@include file-fluent.conf
+    @include elastic-fluent.conf
   pods-kind-fluent.conf: |-
     <source>
       @type tail
@@ -127,6 +127,13 @@ data:
       host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
       port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
       index_name users
+    </match>
+
+     <match adClicks.fakemicroservice.**>
+      @type elasticsearch
+      host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
+      port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
+      index_name adClicks
     </match>
 
     <match fluent.**>

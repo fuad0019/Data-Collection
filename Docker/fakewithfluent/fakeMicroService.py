@@ -49,7 +49,7 @@ for _ in range(5):
 
 #Creates events in a loop
 while True:
-    rand = random.randint(1,6)
+    rand = random.randint(1,7)
     time.sleep(rand)
 
     
@@ -70,6 +70,10 @@ while True:
         entry = generate_searchQueries(users,days)
     elif switch == 6:
         entry = generate_songPausedAndUnpaused(users,songs,days)
+    elif switch == 7:
+        entry = generate_adClicks(users,days)
+
+    
 
     entry = json.dumps(entry)
     print(entry)

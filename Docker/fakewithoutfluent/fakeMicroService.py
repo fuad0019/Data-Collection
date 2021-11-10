@@ -30,7 +30,7 @@ for _ in range(5):
 print("inserting events in index...")
 while True:
     
-    rand = random.randint(1,6)
+    rand = random.randint(1,7)
     time.sleep(rand)
 
     
@@ -58,6 +58,9 @@ while True:
         entry = generate_userCreated(days)
         users.append(entry)
         res = es.index(index="users",id=str(uuid.uuid4()), body=entry)
+    elif switch == 7:
+        entry = generate_adClicks(users,days)
+        res = es.index(index="adClicks",id=str(uuid.uuid4()), body=entry)
 
     
     
