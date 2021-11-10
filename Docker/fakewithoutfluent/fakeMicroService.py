@@ -13,23 +13,24 @@ from elasticsearch.helpers import streaming_bulk
 es = Elasticsearch("http://t05-elasticsearch:9200")
 
 days = 14
-users = generate_users(5, days)
+n = 10*10*14
 songs = generate_songs(10)
 
-n = 10*10*14
+#Creates some initial "user created" events first and logs them
+users = []
+for _ in range(5):
+    user = generate_userCreated(days)
+    users.append(user) 
+    res = es.index(index="users", id=user["user_id"],body=user)
+    print(res)
 
 
-print("inserting users in index...")
-progress = tqdm.tqdm(unit="events", total=int(len(users))) 
-for ok, action in streaming_bulk(
-    client=es, index="users", chunk_size=2000, actions=generate_userIndex(users,days)
-):
-    progress.update(1)
+
 
 print("inserting events in index...")
 while True:
     
-    rand = random.randint(1,5)
+    rand = random.randint(1,6)
     time.sleep(rand)
 
     
@@ -53,6 +54,12 @@ while True:
     elif switch == 5:
         entry = generate_songPausedAndUnpaused(users,songs,days)
         res = es.index(index="songunpaused",id=str(uuid.uuid4()), body=entry)
+    elif switch == 6:
+        entry = generate_userCreated(days)
+        users.append(entry)
+        res = es.index(index="users",id=str(uuid.uuid4()), body=entry)
+
+    
     
     print(res)
     

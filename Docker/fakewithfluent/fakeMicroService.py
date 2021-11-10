@@ -28,7 +28,7 @@ if os.path.exists(log):
 #The logger module called "logging" logs everything even the imported modules like faker, basically a global logger.
 # So in order to get a logger that only logs this module and ignores the imported modules, a custom logger is created like under:
 logger = logging.getLogger("event_logger")
-handler = logging.FileHandler('log.log')
+handler = logging.FileHandler(log)
 logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
 
@@ -49,12 +49,13 @@ for _ in range(5):
 
 #Creates events in a loop
 while True:
-    time.sleep(random.randint(1,6))
+    rand = random.randint(1,6)
+    time.sleep(rand)
 
     
     #The following code can probably be optimized. Feel free to do so!
     
-    switch = random.randint(1,5)
+    switch = rand
     
     if switch == 1:
           entry = generate_songStarted(users,songs,days)
@@ -67,6 +68,8 @@ while True:
         users.append(entry)
     elif switch == 5:
         entry = generate_searchQueries(users,days)
+    elif switch == 6:
+        entry = generate_songPausedAndUnpaused(users,songs,days)
 
     entry = json.dumps(entry)
     print(entry)

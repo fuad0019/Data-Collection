@@ -74,7 +74,7 @@ spec:
       storageClassName: longhorn # Storage class currently unknown, using default
       resources:
         requests:
-          storage: 8Gi #change this for more persistence storage. Was 100Gi before.
+          storage: 3Gi #change this for more persistence storage. Was 100Gi before.
 
 ---
 kind: Service

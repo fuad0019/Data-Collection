@@ -10,31 +10,26 @@ from dateutil.relativedelta import relativedelta
 
 fake = Faker()
 
-
-def generate_users(n,days):
+def generate_userCreated(days):
     #https://www.w3schools.com/python/python_dictionaries.asp
     gender = ['male', 'female', 'other']
-    users = []
     genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
     dob = fake.date_between(start_date='-60y', end_date='-10y').isoformat()
     name = fake.name()
-    
-    for _ in range(n):
-        name = fake.name()
-        users.append({
+    doc = {
             "event": "userCreated",
-            "_id": str(uuid.uuid4()),
+            "user_id": str(uuid.uuid4()),
             "name": name,
             "email": fake.ascii_email(),
             "gender": random.choice(gender),
             "country": fake.country(),
             "dob": dob,
-            "age": str(relativedelta(datetime.today(), dob).years),
+            "age": str(relativedelta(datetime.today(), fake.date_between(start_date='-60y', end_date='-10y')).years),
             "timestamp": genTimestamp
-        })
+        }
         
-    return users
-
+    return doc
+    
 
 def generate_songs(n):
     
@@ -53,7 +48,8 @@ def generate_songs(n):
 def generate_songStarted(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
-                "user": random.choice(users)["_id"],
+                "event": "songStarted",
+                "user": random.choice(users)["user_id"],
                 "song": random.choice(songs),
                 "timestamp": genTimestamp
             }
@@ -63,7 +59,8 @@ def generate_songStarted(users,songs,days):
 def generate_songSkipped(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
-                "user": random.choice(users)["_id"],
+                "event": "songSkipped",
+                "user": random.choice(users)["user_id"],
                 "song": random.choice(songs),
                 "timestamp": genTimestamp,
                 "duration": random.randint(0,20)
@@ -73,8 +70,10 @@ def generate_songSkipped(users,songs,days):
 
 def generate_songPausedAndUnpaused(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
+        events = ["songPaused", "songUnpaused"]
         doc ={
-                "user": random.choice(users)["_id"],
+                "event": random.choice(events),
+                "user": random.choice(users)["user_id"],
                 "song": random.choice(songs),
                 "timestamp": genTimestamp,
                 "duration": random.randint(0,180)
@@ -85,7 +84,8 @@ def generate_songPausedAndUnpaused(users,songs,days):
 def generate_searchQueries(users,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
-                "user": random.choice(users)["_id"],
+                "event": "search",
+                "user": random.choice(users)["user_id"],
                 "searchterm": fake.text(max_nb_chars=20)[:-1],
                 "timestamp": genTimestamp
             }
@@ -93,21 +93,3 @@ def generate_searchQueries(users,days):
         return doc
 
 
-def generate_userIndex(users,days):
-
-
-    for user in users:
-
-        genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
-        doc ={
-                    "_id": user["_id"],
-                    "name": user["name"],
-                    "email": user["email"],
-                    "gender": user["gender"],
-                    "country": user["country"],
-                    "dob":user["dob"],
-                    "age":user["age"],
-                    "timestamp": genTimestamp
-                }
-
-        yield doc
