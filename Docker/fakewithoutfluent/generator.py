@@ -92,12 +92,12 @@ def generate_searchQueries(users,days):
 
         return doc
 
-def generate_addclicks(users,days):
+def generate_adClicks(users,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
                 "event": "search",
                 "user": random.choice(users)["user_id"],
-                "searchterm": fake.text(max_nb_chars=20)[:-1],
+                "ad": str(uuid.uuid4()),
                 "timestamp": genTimestamp
             }
 

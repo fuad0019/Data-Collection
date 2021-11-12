@@ -140,6 +140,18 @@ def artist_amount_played(id):
 
     return json.dumps(plays)
 
+@app.route('/ads/<id>/amount_clicked')
+def ad_amount_clicked(id):
+    results = elastic.search(index="adClicks", doc_type="_doc", body={"query": {
+        "bool": {
+            "must": [
+                {"match": {"ad": id}}]}}})
+    x = results['hits'].get("total").get("value")
+    clicks = {
+        "clicks": x
+    }
+
+    return json.dumps(clicks)
 
 @app.route('/songs/top')
 def get_top_songs():
