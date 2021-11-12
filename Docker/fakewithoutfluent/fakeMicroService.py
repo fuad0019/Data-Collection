@@ -60,7 +60,7 @@ while True:
         res = es.index(index="users",id=str(uuid.uuid4()), body=entry)
     elif switch == 7:
         entry = generate_adClicks(users,days)
-        res = es.index(index="addclicks",id=str(uuid.uuid4()), body=entry)
+        res = es.index(index="adclicks",id=str(uuid.uuid4()), body=entry)
 
     
     
