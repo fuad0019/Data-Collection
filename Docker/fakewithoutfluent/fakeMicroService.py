@@ -59,8 +59,8 @@ while True:
         users.append(entry)
         res = es.index(index="users",id=str(uuid.uuid4()), body=entry)
     elif switch == 7:
-        entry = generate_adClicks(users,days)
-        res = es.index(index="adClicks",id=str(uuid.uuid4()), body=entry)
+        entry = generate_addclicks(users,days)
+        res = es.index(index="addclicks",id=str(uuid.uuid4()), body=entry)
 
     
     
