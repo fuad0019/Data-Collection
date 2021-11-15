@@ -25,6 +25,13 @@ spec:
           value: "http://t05-elasticsearch:9200"
         - name: ELASTICSEARCH_HOSTS
           value: "http://t05-elasticsearch:9200"
+        volumeMounts:
+        - name: config
+          mountPath: /usr/share/kibana/config
+      volumes:
+      - name: "config"
+        configMap:
+          name: t05-kibana-config
 ---
 apiVersion: v1
 kind: Service

@@ -24,7 +24,7 @@ def getUsers():
 
     data = results['hits'].get("hits")
        
-    return json.dumps(data)
+    return jsonify(data)
     
 
 
@@ -44,7 +44,7 @@ def get_user_profile(userid):
             "Age": str(relativedelta(datetime.today(), dob).years)
         }
 
-    return json.dumps(data)
+    return jsonify(data)
 
 
 # http://192.168.136.61:5000/history/41c6e6d7-b78c-413f-adb3-0567aa4996ef
@@ -61,7 +61,7 @@ def get_history(id):
             "timestamp": i['_source']["timestamp"]
         }
         userHistory.append(data)
-    return json.dumps(userHistory)
+    return jsonify(userHistory)
 
 
 @app.route('/users/<id>/searches')
@@ -76,7 +76,7 @@ def get_search_history(id):
             "timestamp": i['_source']["timestamp"]
         }
         userSearchHistory.append(data)
-    return json.dumps(userSearchHistory)
+    return jsonify(userSearchHistory)
 
 
 @app.route('/users/<user>/songs/<song>/amount_played')
@@ -96,7 +96,7 @@ def amount_song_played_by_user(user, song):
         "plays": x
     }
 
-    return json.dumps(plays)
+    return jsonify(plays)
 
 
 @app.route('/users/<user>/artists/<artist>/amount_played')
@@ -111,7 +111,7 @@ def amount_artist_played_by_user(user, artist):
         "plays": x
     }
 
-    return json.dumps(plays)
+    return jsonify(plays)
 
 
 @app.route('/songs/<id>/amount_played')
@@ -125,7 +125,7 @@ def amount_song_played(id):
         "plays": x
     }
 
-    return json.dumps(plays)
+    return jsonify(plays)
 
 
 @app.route('/artists/<id>/amount_played')
@@ -139,7 +139,7 @@ def artist_amount_played(id):
         "plays": x
     }
 
-    return json.dumps(plays)
+    return jsonify(plays)
 
 @app.route('/ads/<id>/amount_clicked')
 def ad_amount_clicked(id):
@@ -152,7 +152,7 @@ def ad_amount_clicked(id):
         "clicks": x
     }
 
-    return json.dumps(clicks)
+    return jsonify(clicks)
 
 @app.route('/songs/top')
 def get_top_songs():
@@ -171,7 +171,7 @@ def get_top_songs():
         }
         topsongs.append(data)
 
-    return json.dumps(topsongs)
+    return jsonify(topsongs)
 
 
 @app.route('/artists/top')
@@ -191,7 +191,7 @@ def get_top_artists():
         }
         topartists.append(data)
 
-    return json.dumps(topartists)
+    return jsonify(topartists)
 
 
 @app.route('/users/<id>/artists/top')
@@ -214,7 +214,7 @@ def get_top_artist_for_user(id):
         }
         topartists.append(data)
 
-    return json.dumps(topartists)
+    return jsonify(topartists)
 
 
 @app.route('/users/<id>/songs/top')
@@ -237,7 +237,7 @@ def get_top_songs_for_user(id):
         }
         topartists.append(data)
 
-    return json.dumps(topartists)
+    return jsonify(topartists)
 
 
 @app.route('/users/<id>/genres/top')
@@ -260,7 +260,7 @@ def get_top_genres_for_user(id):
         }
         topartists.append(data)
 
-    return json.dumps(topartists)
+    return jsonify(topartists)
 
 
 if __name__ == '__main__':
