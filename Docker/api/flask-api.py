@@ -25,6 +25,7 @@ def getUsers():
     data = results['hits'].get("hits")
        
     return json.dumps(data)
+    
 
 
 @app.route('/users/<userid>')
