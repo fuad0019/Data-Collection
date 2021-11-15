@@ -7,27 +7,20 @@ data:
   fluent.conf: |-
     ################################################################
     # This source gets all logs from local docker host
-    @include pods-kind-fluent.conf
-    #@include pods-fluent.conf
-    @include aggregate-to-index
-    #@include file-fluent.conf
-    @include elastic-fluent.conf
-  pods-kind-fluent.conf: |-
+    @include pods-fluent.conf
+    #@include aggregate-to-index
+    @include file-fluent.conf
+    #@include elastic-fluent.conf
+    #@include mongo-fluent.cont
+
+  pods-fluent.conf: |-
     <source>
-      @type tail
-      read_from_head true
-      tag fakemicroservice.*
-      path /var/log/containers/t05-fakemicroservice*.log
-      pos_file /var/log/fluentd-containers.log.pos
-      exclude_path ["/var/log/containers/t05-fluent*"]
-      <parse>
-        @type json
-        time_key timestamp
-        time_format %iso8601
-      </parse>
+      @type forward
+      bind 0.0.0.0
+      port 24224
     </source>
 
-    <filter fakemicroservice.**>
+    <filter **t05-fakemicroservice**>
       @type parser
       key_name log
       <parse>
@@ -36,36 +29,9 @@ data:
     </filter>
 
  
-   
-  pods-fluent.conf: |-
-    <source>
-      @type tail
-      read_from_head true
-      tag kubernetes.*
-      path /var/log/containers/*.log
-      pos_file /var/log/fluentd-containers.log.pos
-      exclude_path ["/var/log/containers/t05-fluent*"]
-      <parse>
-        @type kubernetes
-        @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
-        time_format %Y-%m-%dT%H:%M:%S.%NZ
-      </parse>
-    </source>
-
-    <filter kubernetes.**>
-      @type kubernetes_metadata
-      @id filter_kube_metadata
-      kubernetes_url "#{ENV['FLUENT_FILTER_KUBERNETES_URL'] || 'https://' + ENV.fetch('KUBERNETES_SERVICE_HOST') + ':' + ENV.fetch('KUBERNETES_SERVICE_PORT') + '/api'}"
-      verify_ssl "#{ENV['KUBERNETES_VERIFY_SSL'] || true}"
-      ca_file "#{ENV['KUBERNETES_CA_FILE']}"
-      skip_labels "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_LABELS'] || 'false'}"
-      skip_container_metadata "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_CONTAINER_METADATA'] || 'false'}"
-      skip_master_url "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_MASTER_URL'] || 'false'}"
-      skip_namespace_metadata "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_NAMESPACE_METADATA'] || 'false'}"
-    </filter>
 
   aggregate-to-index: |-
-    <match fakemicroservice.**>
+    <match **t05-fakemicroservice**>
       @type rewrite_tag_filter
       <rule>
         key $.event
@@ -75,15 +41,19 @@ data:
     </match>
 
   file-fluent.conf: |-
-    <match fakemicroservice.**>
+    <match **t05-fakemicroservice**>
       @type file
-      path /tmp/${tag}.log
+      path /tmp/fake-microservice.log
+    </match>
+    
+    <match **>
+      @type file
+      path /tmp/file-test.log
     </match>
 
-    <match fluent.**> 
-      @type null
-    </match>
 
+    
+    
   mongo-fluent.cont: |-
     <match userCreated.fakemicroservice.**>
       @type mongo
@@ -91,62 +61,62 @@ data:
       port 27017
       database t05
       collection users
-  # for capped collection
+      #for capped collection
       capped
       capped_size 1024m
-  # authentication
+      # authentication
       user username123
       password password123
       <buffer>
-    # flush
+      # flush
         flush_interval 10s
       </buffer>
     </match>
    
   elastic-fluent.conf: |-
-    <match songStarted.fakemicroservice.**>
+    <match songStarted.t05-fakemicroservice-team05>
       @type elasticsearch
       host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
       port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
       index_name songStarted
     </match>
 
-    <match songSkipped.fakemicroservice.**>
+    <match songSkipped.t05-fakemicroservice-team05>
       @type elasticsearch
       host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
       port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
       index_name songSkipped
     </match>
 
-    <match songPaused.fakemicroservice.**>
+    <match songPaused.t05-fakemicroservice-team05>
       @type elasticsearch
       host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
       port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
       index_name songPaused
     </match>
 
-    <match songUnpaused.fakemicroservice.**>
+    <match songUnpaused.t05-fakemicroservice-team05>
       @type elasticsearch
       host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
       port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
       index_name songUnpaused
     </match>
 
-    <match search.fakemicroservice.**>
+    <match search.t05-fakemicroservice-team05>
      @type elasticsearch
       host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
       port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
       index_name search
     </match>
 
-    <match userCreated.fakemicroservice.**>
+    <match userCreated.t05-fakemicroservice-team05>
       @type elasticsearch
       host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
       port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
       index_name users
     </match>
 
-     <match adClicks.fakemicroservice.**>
+     <match adClicks.t05-fakemicroservice-team05>
       @type elasticsearch
       host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
       port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
@@ -156,5 +126,4 @@ data:
     <match fluent.**>
       @type null
     </match>
-   
-   
+ 

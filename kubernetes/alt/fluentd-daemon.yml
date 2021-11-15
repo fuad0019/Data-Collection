@@ -2,19 +2,19 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: t05-fluentd
-  namespace: team05
+  namespace: fluent
   labels:
-    k8s-app: t05-fluentd-logging
+    k8s-app: t05-fluentd
     version: v1
 spec:
   selector:
     matchLabels:
-      k8s-app: t05-fluentd-logging
+      k8s-app: t05-fluentd
       version: v1
   template:
     metadata:
       labels:
-        k8s-app: t05-fluentd-logging
+        k8s-app: t05-fluentd
         version: v1
     spec:
       tolerations:
@@ -23,6 +23,9 @@ spec:
       containers:
       - name: t05-fluentd
         image: fluent/fluentd-kubernetes-daemonset:v1-debian-elasticsearch
+        ports:
+        - containerPort: 24224
+          protocol: TCP
         env:
           - name:  FLUENT_ELASTICSEARCH_HOST
             value: "t05-elasticsearch"
@@ -53,4 +56,4 @@ spec:
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
-  
+

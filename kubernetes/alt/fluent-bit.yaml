@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluent-bit
+  namespace: fluent
+  labels:
+    k8s-app: fluent-bit
+    version: v1
+    kubernetes.io/cluster-service: "true"
+spec:
+  selector:
+    matchLabels:
+      name: fluent-bit
+  template:
+    metadata:
+      labels:
+        name: fluent-bit
+        k8s-app: fluent-bit
+        version: v1
+        kubernetes.io/cluster-service: "true"
+    spec:
+      containers:
+      - name: fluent-bit
+        image: fluent/fluent-bit:1.6.0
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 2020
+        env:
+        - name: FLUENTD_HOST
+          value: t05-fluentd.team05.svc.cluster.local #YOUR FLUENTD HOST IP
+        - name: FLUENTD_PORT
+          value: "24224"        
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: fluent-bit-config
+          mountPath: /fluent-bit/etc/
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: fluent-bit-config
+        configMap:
+          name: fluent-bit-config
+      serviceAccountName: fluent-bit
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fluent-bit
+  namespace: fluent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: fluent-bit-read
+rules:
+- apiGroups: [""]
+  resources:
+  - namespaces
+  - pods
+  verbs: ["get", "list", "watch"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: fluent-bit-read
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: fluent-bit-read
+subjects:
+- kind: ServiceAccount
+  name: fluent-bit
+  namespace: fluent
+

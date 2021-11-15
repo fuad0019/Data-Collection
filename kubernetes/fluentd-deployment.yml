@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: t05-fluentd
+  namespace: team05
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t05-fluentd
+  template:
+    metadata:
+      labels:
+        app: t05-fluentd
+    spec:
+      containers:
+      - image: fujam20/fluentd
+        imagePullPolicy: IfNotPresent
+        name: t05-fluentd
+        ports:
+        - containerPort: 24224
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /fluentd/etc
+          name: config
+          readOnly: true
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: t05-fluentd-config
+        name: config
+      imagePullSecrets:
+      - name: sdugitlab
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: t05-fluentd
+  namespace: team05
+  labels:
+    app: t05-fluentd
+spec:
+  selector:
+    app: t05-fluentd
+  ports:
+  - port: 24224
+    protocol: TCP
+    targetPort: 24224
