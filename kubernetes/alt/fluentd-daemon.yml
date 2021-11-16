@@ -17,6 +17,8 @@ spec:
         k8s-app: t05-fluentd
         version: v1
     spec:
+      serviceAccount: t05-fluentd
+      serviceAccountName: t05-fluentd
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
@@ -57,3 +59,36 @@ spec:
         hostPath:
           path: /var/lib/docker/containers
 
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: t05-fluentd
+  namespace: fluent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: t05-fluentd
+  namespace: fluent
+rules:
+- apiGroups: [""]
+  resources:
+  - namespaces
+  - pods
+  verbs: ["get", "list", "watch"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: t05-fluentd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: t05-fluentd
+subjects:
+- kind: ServiceAccount
+  name: t05-fluentd
+  namespace: fluent

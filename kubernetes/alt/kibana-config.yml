@@ -6,5 +6,5 @@ metadata:
 data:
   kibana.yml: |
     ---
-    server.basePath: "/kibana"
+    server.basePath: "/service03"
  

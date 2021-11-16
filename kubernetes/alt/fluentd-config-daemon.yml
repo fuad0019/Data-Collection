@@ -25,6 +25,9 @@ data:
       </parse>
     </source>
  
+    <filter **>
+      @type  kubernetes_metadata
+    </filter>
   
   forward-fluent.conf: |-
     <match **>

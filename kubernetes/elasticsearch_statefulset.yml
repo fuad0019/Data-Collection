@@ -19,9 +19,9 @@ spec:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
         resources:
             limits:
-              cpu: 200m
-            requests:
               cpu: 100m
+            requests:
+              cpu: 50m
         ports:
         - containerPort: 9200
           name: rest
@@ -71,10 +71,10 @@ spec:
         app: t05-elasticsearch
     spec:
       accessModes: [ "ReadWriteOnce" ] #storage class will give an error if not set on kubernetes cluster
-      storageClassName: longhorn # Storage class currently unknown, using default
+      #storageClassName: longhorn # Storage class currently unknown, using default
       resources:
         requests:
-          storage: 3Gi #change this for more persistence storage. Was 100Gi before.
+          storage: 2Gi #change this for more persistence storage. Was 100Gi before.
 
 ---
 kind: Service

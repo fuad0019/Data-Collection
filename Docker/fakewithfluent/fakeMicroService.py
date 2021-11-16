@@ -10,17 +10,17 @@ from generator import *
 
 log = "fake.log"
 
-id = 0 
+#id = 0 
 # Read id from the log
-if os.path.exists(log):
-    with open(log, 'r') as f:
-        lines = f.readlines()
-        if len(lines) > 0:
-            last_line = lines[len(lines)-1]
-            stripped_line = last_line[last_line.find('{'):]
-            entry = json.loads(stripped_line) # Convert line to dictionary
-            if entry['id']:
-                id = entry['id']+1
+#if os.path.exists(log):
+ #   with open(log, 'r') as f:
+  #      lines = f.readlines()
+   #     if len(lines) > 0:
+    #        last_line = lines[len(lines)-1]
+     #       stripped_line = last_line[last_line.find('{'):]
+      #      entry = json.loads(stripped_line) # Convert line to dictionary
+       #     if entry['_id']:
+        #        id = entry['_id']+1
 
 # filemode w for overwriting whole file, filemode a for appending
 #logging.basicConfig(filename=log, filemode="w", level=logging.DEBUG) 
@@ -34,12 +34,15 @@ logger.setLevel(logging.DEBUG)
 
 days = 14
 n = 10*10*14
-songs = generate_songs(10)
+artists = generate_artists(3)
+songs = generate_songs(10,artists)
+
 
 #Creates some initial "user created" events first and logs them
 users = []
+countries = generate_countries(10)
 for _ in range(5):
-    user = generate_userCreated(days)
+    user = generate_userCreated(days, countries)
     users.append(user) 
     user = json.dumps(user)
     print(user)
@@ -64,7 +67,7 @@ while True:
     elif switch == 3:
         entry = generate_songPausedAndUnpaused(users,songs,days)
     elif switch == 4:
-        entry = generate_userCreated(days)
+        entry = generate_userCreated(days, countries)
         users.append(entry)
     elif switch == 5:
         entry = generate_searchQueries(users,days)
@@ -79,4 +82,4 @@ while True:
     print(entry)
     #logging.info(entry)
     logger.info(entry)
-    id += 1
+    #id += 1
