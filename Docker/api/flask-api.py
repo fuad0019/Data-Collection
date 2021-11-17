@@ -262,6 +262,38 @@ def get_top_genres_for_user(id):
 
     return jsonify(topartists)
 
+@app.route('/advertisements/<id>/amount_clicked')
+def get_top_genres_for_user(id):
+
+
+    return ""
+
+@app.route('/logs/<namespace>')
+def get_top_genres_for_user(id):
+
+    
+    return ""
+
+@app.route('/logs/all')
+def get_top_genres_for_user(id):
+
+    
+    return ""
+
+@app.route('/users/<id>/recommendations/artists')
+def get_top_genres_for_user(id):
+
+    return ""
+
+@app.route('/users/<id>/recommendations/songs')
+def get_top_genres_for_user(id):
+
+    return ""
+
+@app.route('/users/<id>/recommendations/genres')
+def get_top_genres_for_user(id):
+
+    return ""
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

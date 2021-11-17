@@ -13,8 +13,8 @@ data:
     @include tag-namespace-and-pod
     @include aggregate-to-index
     
-    @include file-fluent.conf
-    #@include elastic-fluent.conf
+    #@include file-fluent.conf
+    @include elastic-fluent.conf
     #@include mongo-fluent.cont
 
   pods-fluent.conf: |-
@@ -94,8 +94,20 @@ data:
       @type elasticsearch
       host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
       port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
-      logstash_format true
-      logstash_prefix ${tag}
+      include_tag_key true
+      tag_key @log_name
+      index_name ${tag}
+      flush_interval 10s
+      <buffer>
+        @type file
+        path /opt/bitnami/fluentd/logs/buffers/logs.buffer
+        flush_thread_count 2
+        flush_interval 5s
+        chunk_limit_size 2m
+      </buffer>
     </match>
+
+
+
 
   
