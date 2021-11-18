@@ -14,8 +14,9 @@ data:
     @include aggregate-to-index
     
     #@include file-fluent.conf
+    @include mongo-fluent.cont
     @include elastic-fluent.conf
-    #@include mongo-fluent.cont
+    
 
   pods-fluent.conf: |-
     <source>
@@ -72,9 +73,8 @@ data:
 
   mongo-fluent.cont: |-
     <match userCreated**>
-      @type mongo
-      host t05-mongodb
-      port 27017
+      type mongo
+      connection_string mongodb://t05-mongodb:27017
       database t05
       collection users
       #for capped collection
