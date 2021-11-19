@@ -310,8 +310,6 @@ def get_genres_recommendation_for_user(id):
 
     topgenresForUser = [topgenres[0].get('genre')]
 
-@app.route('/users/<id>/recommendations/songs')
-def get_user_recommendations_songs(id):
     topGenreResult = elastic.search(index="songs", doc_type="_doc", body={"query": {
         "more_like_this": {
             "fields": ["genre.keyword"],
