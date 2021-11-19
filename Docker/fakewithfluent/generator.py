@@ -26,7 +26,7 @@ def generate_userCreated(days, countries):
     name = fake.name()
     doc = {
             "event": "userCreated",
-            "userid": str(uuid.uuid4()),
+            "_id": str(uuid.uuid4()),
             "name": name,
             "email": fake.ascii_email(),
             "gender": random.choice(gender),
@@ -63,7 +63,7 @@ def generate_songStarted(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
                 "event": "songStarted",
-                "user": random.choice(users)["userid"],
+                "user": random.choice(users)["_id"],
                 "song": random.choice(songs),
                 "timestamp": genTimestamp
             }
@@ -74,7 +74,7 @@ def generate_songSkipped(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
                 "event": "songSkipped",
-                "user": random.choice(users)["userid"],
+                "user": random.choice(users)["_id"],
                 "song": random.choice(songs),
                 "timestamp": genTimestamp,
                 "duration": random.randint(0,20)
@@ -87,7 +87,7 @@ def generate_songPausedAndUnpaused(users,songs,days):
         events = ["songPaused", "songUnpaused"]
         doc ={
                 "event": random.choice(events),
-                "user": random.choice(users)["userid"],
+                "user": random.choice(users)["_id"],
                 "song": random.choice(songs),
                 "timestamp": genTimestamp,
                 "duration": random.randint(0,180)
@@ -99,7 +99,7 @@ def generate_searchQueries(users,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
                 "event": "search",
-                "user": random.choice(users)["userid"],
+                "user": random.choice(users)["_id"],
                 "searchterm": fake.text(max_nb_chars=20)[:-1],
                 "timestamp": genTimestamp
             }
@@ -110,7 +110,7 @@ def generate_adClicks(users,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={
                 "event": "adclicks",
-                "user": random.choice(users)["userid"],
+                "user": random.choice(users)["_id"],
                 "ad": str(uuid.uuid4()),
                 "timestamp": genTimestamp
             }

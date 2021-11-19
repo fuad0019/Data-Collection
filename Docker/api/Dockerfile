@@ -4,5 +4,6 @@ RUN pip install markupsafe
 RUN pip install elasticsearch
 RUN pip install datetime
 RUN pip install python-dateutil
+RUN pip install pymongo
 COPY . .
 CMD python3 flask-api.py

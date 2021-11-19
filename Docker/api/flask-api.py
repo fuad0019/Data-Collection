@@ -1,14 +1,20 @@
 from unicodedata import name
-from flask import Flask, jsonify, render_template  
+from flask import Flask, jsonify, render_template, request 
 from flask.json import dumps
 from markupsafe import escape
 from elasticsearch import Elasticsearch
 import json
+import pymongo
+import urllib.parse
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
 
 elastic = Elasticsearch(host="t05-elasticsearch")
+username = urllib.parse.quote_plus('username123')
+password = urllib.parse.quote_plus('password123')
+
+myclient = pymongo.MongoClient('mongodb://%s:%s@t05-mongodb:27017'% (username, password) )
 
 # This sets up the application using the Flask object from the package flask.
 app = Flask(__name__)
@@ -263,37 +269,46 @@ def get_top_genres_for_user(id):
     return jsonify(topartists)
 
 @app.route('/advertisements/<id>/amount_clicked')
-def get_top_genres_for_user(id):
+def get_advertisements_amount_clicked(id):
 
 
     return ""
 
 @app.route('/logs/<namespace>')
-def get_top_genres_for_user(id):
+def get_namespace_log(id):
 
     
     return ""
 
 @app.route('/logs/all')
-def get_top_genres_for_user(id):
+def get_all_log(id):
 
     
     return ""
 
 @app.route('/users/<id>/recommendations/artists')
-def get_top_genres_for_user(id):
+def get_user_recommendations_artist(id):
 
     return ""
 
 @app.route('/users/<id>/recommendations/songs')
-def get_top_genres_for_user(id):
+def get_user_recommendations_songs(id):
 
     return ""
 
 @app.route('/users/<id>/recommendations/genres')
-def get_top_genres_for_user(id):
+def get_user_recommendations_genres(id):
 
     return ""
+
+@app.route('/users',methods=['POST'])
+def save_user():
+    data = request.json
+    return data
+    mydb = myclient["t05"]
+    mycol = mydb["users"]
+    x = mycol.insert_one(data)
+    return str(x.inserted_id)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

@@ -3,6 +3,7 @@ import random
 import time
 import os
 import json
+import requests
 from datetime import datetime
 from generator import *
 
@@ -42,11 +43,13 @@ songs = generate_songs(10,artists)
 users = []
 countries = generate_countries(10)
 for _ in range(5):
+
     user = generate_userCreated(days, countries)
     users.append(user) 
-    user = json.dumps(user)
-    print(user)
-    logger.info(user)
+    user = json.dumps(user) 
+    res = requests.post('http://service01:80/users', json=user)
+    print(res)
+
 
     
 
@@ -67,8 +70,12 @@ while True:
     elif switch == 3:
         entry = generate_songPausedAndUnpaused(users,songs,days)
     elif switch == 4:
-        entry = generate_userCreated(days, countries)
-        users.append(entry)
+        doc = generate_userCreated(days, countries)
+        doc_json = json.dumps(doc)
+        users.append(doc)
+        req = requests.post('http://service01:80/users', json=user)
+        print(req)
+
     elif switch == 5:
         entry = generate_searchQueries(users,days)
     elif switch == 6:
@@ -77,9 +84,11 @@ while True:
         entry = generate_adClicks(users,days)
 
     
-
-    entry = json.dumps(entry)
-    print(entry)
-    #logging.info(entry)
-    logger.info(entry)
-    #id += 1
+    if(switch!=4):
+        entry = json.dumps(entry)
+        print(entry)
+        #logging.info(entry)
+        logger.info(entry)
+        #id += 1
+        
+    
