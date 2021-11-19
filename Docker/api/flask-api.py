@@ -305,6 +305,7 @@ def get_user_recommendations_genres(id):
 def save_user():
     data = request.json
     return data
+    
     mydb = myclient["t05"]
     mycol = mydb["users"]
     x = mycol.insert_one(data)
