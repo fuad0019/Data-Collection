@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: t05-api
-        image: gitlab.sdu.dk:5050/semester-project-e2021/team-05/template/docker/api:latest
+        image: gitlab.sdu.dk:5050/semester-project-e2021/team-05/template/docker/api
         ports:
         - containerPort: 5000
       imagePullSecrets:
@@ -27,6 +27,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: service01
+  namespace: team05
 spec: 
   type: ClusterIP
   selector:

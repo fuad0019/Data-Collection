@@ -50,9 +50,6 @@ for _ in range(5):
     res = requests.post('http://service01:80/users', json=user)
     print(res)
 
-
-    
-
 #Creates events in a loop
 while True:
     rand = random.randint(1,9)
@@ -73,8 +70,8 @@ while True:
         doc = generate_userCreated(days, countries)
         doc_json = json.dumps(doc)
         users.append(doc)
-        req = requests.post('http://service01:80/users', json=user)
-        print(req)
+        res = requests.post('http://service01:80/users', json=user)
+        print(res)
 
     elif switch == 5:
         entry = generate_searchQueries(users,days)

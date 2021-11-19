@@ -377,12 +377,19 @@ def get_user_recommendations_genres(id):
 
 @app.route('/users',methods=['POST'])
 def save_user():
+    if(request.is_json!=True):
+        return "This is not json"
+
+
+    
     data = request.json
-    return data
+    mongodoc = json.loads(data)
+    
+
 
     mydb = myclient["t05"]
     mycol = mydb["users"]
-    x = mycol.insert_one(data)
+    x = mycol.insert_one(mongodoc)
     return str(x.inserted_id)
 
 if __name__ == '__main__':
