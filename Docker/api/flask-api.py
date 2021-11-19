@@ -57,7 +57,7 @@ def get_user_profile(userid):
 
 @app.route('/users/<id>/songs')
 def get_history(id):
-    results = elastic.search(index="songstarted", doc_type="_doc", body={
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={
                              "query": {"match": {"user": id}}})
 
     userHistory = []
@@ -87,7 +87,7 @@ def get_search_history(id):
 
 @app.route('/users/<user>/songs/<song>/amount_played')
 def amount_song_played_by_user(user, song):
-    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {"user": user}},
@@ -107,7 +107,7 @@ def amount_song_played_by_user(user, song):
 
 @app.route('/users/<user>/artists/<artist>/amount_played')
 def amount_artist_played_by_user(user, artist):
-    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {"user": user}},
@@ -122,7 +122,7 @@ def amount_artist_played_by_user(user, artist):
 
 @app.route('/songs/<id>/amount_played')
 def amount_song_played(id):
-    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {"song._id.keyword": id}}]}}})
@@ -136,7 +136,7 @@ def amount_song_played(id):
 
 @app.route('/artists/<id>/amount_played')
 def artist_amount_played(id):
-    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {"song.artist.keyword": id}}]}}})
@@ -163,7 +163,7 @@ def ad_amount_clicked(id):
 @app.route('/songs/top')
 def get_top_songs():
     # Get top 10 songs started the last week
-    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "filter":
                 {"range": {"timestamp": {"gte": "now-7d/d", "lt": "now/d"}}}}},
@@ -183,7 +183,7 @@ def get_top_songs():
 @app.route('/artists/top')
 def get_top_artists():
     # Get top 10 artists the last week
-    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "filter":
                 {"range": {"timestamp": {"gte": "now-7d/d", "lt": "now/d"}}}}},
@@ -202,7 +202,7 @@ def get_top_artists():
 
 @app.route('/users/<id>/artists/top')
 def get_top_artist_for_user(id):
-    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
@@ -225,7 +225,7 @@ def get_top_artist_for_user(id):
 
 @app.route('/users/<id>/songs/top')
 def get_top_songs_for_user(id):
-    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
@@ -248,7 +248,7 @@ def get_top_songs_for_user(id):
 
 @app.route('/users/<id>/genres/top')
 def get_top_genres_for_user(id):
-    results = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
@@ -286,15 +286,91 @@ def get_all_log(id):
     
     return ""
 
-@app.route('/users/<id>/recommendations/artists')
-def get_user_recommendations_artist(id):
+@app.route('/users/<id>/recommendation/songs')
+def get_genres_recommendation_for_user(id):
+    topGenreResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+        "bool": {
+            "filter":
+                {"range": {"timestamp": {"gte": "now-7d/d", "lt": "now/d"}}},
+            "must": [
+                {"match": {
+                    "user": id
+                }}
+            ]
+        }
+    },
+        "aggs": {"artists": {"terms": {"field": "song.genre.keyword"}}}})
+    topgenres = []
+    for i in topGenreResult['aggregations']['artists']['buckets']:
+        data = {
+            "genre": i["key"],
+            "plays": i["doc_count"]
+        }
+        topgenres.append(data)
 
-    return ""
+    topgenresForUser = [topgenres[0].get('genre')]
 
 @app.route('/users/<id>/recommendations/songs')
 def get_user_recommendations_songs(id):
+    topGenreResult = elastic.search(index="songs", doc_type="_doc", body={"query": {
+        "more_like_this": {
+            "fields": ["genre.keyword"],
+            "like": [topgenresForUser[0]],
+            "min_term_freq": 1,
+            "max_query_terms": 2
+        }
+    }})
+    songs = []
+    for i in topGenreResult['hits'].get('hits'):
+        data = {
+            "title": i["_source"]["title"],
+            "genre": i["_source"]["genre"],
+            "artist": i["_source"]["artist"]
+        }
+        songs.append(data)
+    return jsonify(songs)
 
-    return ""
+
+@app.route('/users/<id>/recommendation/artists')
+def get_artist_recommendation_for_user(id):
+    topGenreResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+        "bool": {
+            "filter":
+                {"range": {"timestamp": {"gte": "now-7d/d", "lt": "now/d"}}},
+            "must": [
+                {"match": {
+                    "user": id
+                }}
+            ]
+        }
+    },
+        "aggs": {"artists": {"terms": {"field": "song.genre.keyword"}}}})
+    topgenres = []
+    for i in topGenreResult['aggregations']['artists']['buckets']:
+        data = {
+            "genre": i["key"],
+            "plays": i["doc_count"]
+        }
+        topgenres.append(data)
+
+    topgenresForUser = [topgenres[0].get('genre')]
+
+    topGenreResult = elastic.search(index="artists", doc_type="_doc", body={"query": {
+        "more_like_this": {
+            "fields": ["genre.keyword"],
+            "like": [topgenresForUser[0]],
+            "min_term_freq": 1,
+            "max_query_terms": 2
+        }
+    }})
+    songs = []
+    for i in topGenreResult['hits'].get('hits'):
+        data = {
+            "artist_name": i["_source"]["name"],
+            "genre": i["_source"]["genre"],
+        }
+        songs.append(data)
+    return jsonify(songs)
 
 @app.route('/users/<id>/recommendations/genres')
 def get_user_recommendations_genres(id):
@@ -305,7 +381,7 @@ def get_user_recommendations_genres(id):
 def save_user():
     data = request.json
     return data
-    
+
     mydb = myclient["t05"]
     mycol = mydb["users"]
     x = mycol.insert_one(data)
