@@ -52,7 +52,7 @@ for _ in range(5):
 
 #Creates events in a loop
 while True:
-    rand = random.randint(1,7)
+    rand = random.randint(1,8)
     time.sleep(rand)
 
     
@@ -75,6 +75,11 @@ while True:
         entry = generate_songPausedAndUnpaused(users,songs,days)
     elif switch == 7:
         entry = generate_adClicks(users,days)
+    elif switch == 7:
+        entry = gen_song(days)
+    elif switch == 8:
+        entry = gen_artist(days)
+        
 
     
 
