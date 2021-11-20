@@ -6,16 +6,26 @@ from elasticsearch import Elasticsearch
 import json
 import pymongo
 import urllib.parse
+import logging
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
 
 elastic = Elasticsearch(host="t05-elasticsearch")
+
 username = urllib.parse.quote_plus('username123')
 password = urllib.parse.quote_plus('password123')
-
 myclient = pymongo.MongoClient('mongodb://%s:%s@t05-mongodb:27017'% (username, password) )
+mydb = myclient["t05"]
+mycol = mydb["users"]
 
+log = "fake.log"
+
+
+logger = logging.getLogger("event_logger")
+handler = logging.FileHandler(log)
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 # This sets up the application using the Flask object from the package flask.
 app = Flask(__name__)
 
@@ -26,31 +36,28 @@ def home():
 
 @app.route('/users')
 def getUsers():
-    results = elastic.search(index="users", body={"query": {"match_all": {}}})
-
-    data = results['hits'].get("hits")
-       
-    return jsonify(data)
+    users = []
+    for x in mycol.find({},{ "event": 0 }):
+        users.append(x)
+    return jsonify(users)
     
 
 
 @app.route('/users/<userid>')
 def get_user_profile(userid):
     # Get a user profile
-    results = elastic.get(index="users",  id=userid)
+    users = []
+
+    myquery = { "_id": userid }
+
+    for x in mycol.find(myquery,{ "event": 0 }):
+        users.append(x)
+
+    if(len(users)== 0):
+        return jsonify(users)
     
-    dateString = results['_source']["dob"]
-    dob = datetime.strptime(dateString, '%Y-%m-%d')
 
-    data = {
-            "Name": results['_source']["name"],
-            "E-mail": results['_source']["email"],
-            "Gender": results['_source']["gender"],
-            "Country": results['_source']["country"],
-            "Age": str(relativedelta(datetime.today(), dob).years)
-        }
-
-    return jsonify(data)
+    return jsonify(users[0])
 
 
 # http://192.168.136.61:5000/history/41c6e6d7-b78c-413f-adb3-0567aa4996ef
@@ -270,15 +277,28 @@ def get_top_genres_for_user(id):
 
 @app.route('/advertisements/<id>/amount_clicked')
 def get_advertisements_amount_clicked(id):
+    results = elastic.search(index="adclicks.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+        "bool": {
+            "must": [
+                {"match": {"ad._id.keyword": id}}]}}})
+    x = results['hits'].get("total").get("value")
+    plays = {
+        "clicks": x
+    }
 
-
-    return ""
+    return jsonify(plays)
 
 @app.route('/logs/<namespace>')
-def get_namespace_log(id):
+def get_namespace_log(namespace):
+    results = elastic.search(index= namespace + "*", doc_type="_doc")
+    for i in results['hits'].get("hits"):
+        data = {
+            "song": i['_source']["song"],
+            "timestamp": i['_source']["timestamp"]
+        }
+        logger.info(data)
 
-    
-    return ""
+    return jsonify(userHistory)
 
 @app.route('/logs/all')
 def get_all_log(id):
@@ -380,15 +400,11 @@ def save_user():
     if(request.is_json!=True):
         return "This is not json"
 
-
-    
     data = request.json
     mongodoc = json.loads(data)
     
-
-
-    mydb = myclient["t05"]
-    mycol = mydb["users"]
+    
+ 
     x = mycol.insert_one(mongodoc)
     return str(x.inserted_id)
 

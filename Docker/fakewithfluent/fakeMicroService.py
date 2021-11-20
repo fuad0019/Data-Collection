@@ -70,7 +70,7 @@ while True:
         doc = generate_userCreated(days, countries)
         doc_json = json.dumps(doc)
         users.append(doc)
-        res = requests.post('http://service01:80/users', json=user)
+        res = requests.post('http://service01:80/users', json=doc_json)
         print(res)
 
     elif switch == 5:
