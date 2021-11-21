@@ -10,7 +10,7 @@ from generator import *
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
 
-es = Elasticsearch("http://localhost:42177")
+es = Elasticsearch("http://t05-elasticsearch:9200")
 
 days = 14
 n = 10*10*14
