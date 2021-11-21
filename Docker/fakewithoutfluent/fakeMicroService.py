@@ -10,7 +10,7 @@ from generator import *
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
 
-es = Elasticsearch("http://t05-elasticsearch:9200")
+es = Elasticsearch("http://localhost:42177")
 
 days = 14
 n = 10*10*14
@@ -30,8 +30,18 @@ for _ in range(5):
 print("inserting events in index...")
 while True:
     
-    rand = random.randint(1,7)
-    time.sleep(rand)
+    rand = random.randint(1,6)
+    time.sleep(0.05)
+
+    if random.random() > 0.999:
+        user = generate_userCreated(days)
+        users.append(user) 
+        res = es.index(index="users", id=user["user_id"],body=user)
+        print(res)
+    
+    if random.random() > 0.9995:
+        for song in generate_songs(1):
+            songs.append(song)
 
     
     #The following code can probably be optimized. Feel free to do so!
@@ -55,10 +65,6 @@ while True:
         entry = generate_songPausedAndUnpaused(users,songs,days)
         res = es.index(index="songunpaused",id=str(uuid.uuid4()), body=entry)
     elif switch == 6:
-        entry = generate_userCreated(days)
-        users.append(entry)
-        res = es.index(index="users",id=str(uuid.uuid4()), body=entry)
-    elif switch == 7:
         entry = generate_adClicks(users,days)
         res = es.index(index="adclicks",id=str(uuid.uuid4()), body=entry)
 
