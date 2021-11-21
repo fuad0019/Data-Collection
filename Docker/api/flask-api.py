@@ -1,5 +1,6 @@
 from unicodedata import name
-from flask import Flask, jsonify, render_template, request 
+from flask import Flask, jsonify, render_template, request
+from flask.helpers import send_file, send_from_directory 
 from flask.json import dumps
 from markupsafe import escape
 from elasticsearch import Elasticsearch
@@ -19,13 +20,29 @@ myclient = pymongo.MongoClient('mongodb://%s:%s@t05-mongodb:27017'% (username, p
 mydb = myclient["t05"]
 mycol = mydb["users"]
 
-log = "fake.log"
+#log search links saved as saved-objects using the share kibana feauture
+logSavedObjects = {
+    'team05': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/c6697420-4a58-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
+    'kube-system': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/4a1ecf90-4a13-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
+    'longhorn': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/fb3f7f50-4aa3-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
+    'fluent': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/73e45ac0-4aa4-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!f%2Cvalue%3A10000)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
+    'ingress-nginx': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/5bb683f0-4aa5-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!f%2Cvalue%3A10000)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
+    'team01':'',
+    'team02':'',
+    'team03': '',
+    'team04': '',
+    'team06': '',
+    'team07': '',
+    'team08': '',
+    'team09': '',
+    'team10': '',
+    'team11': '',
+    'team12': '',
+    'team13': '',
+    'team14': ''
 
+}
 
-logger = logging.getLogger("event_logger")
-handler = logging.FileHandler(log)
-logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
 # This sets up the application using the Flask object from the package flask.
 app = Flask(__name__)
 
@@ -55,8 +72,7 @@ def get_user_profile(userid):
 
     if(len(users)== 0):
         return jsonify(users)
-    
-
+     
     return jsonify(users[0])
 
 
@@ -290,15 +306,10 @@ def get_advertisements_amount_clicked(id):
 
 @app.route('/logs/<namespace>')
 def get_namespace_log(namespace):
-    results = elastic.search(index= namespace + "*", doc_type="_doc")
-    for i in results['hits'].get("hits"):
-        data = {
-            "song": i['_source']["song"],
-            "timestamp": i['_source']["timestamp"]
-        }
-        logger.info(data)
+    link = logSavedObjects[namespace]
 
-    return jsonify(userHistory)
+    return render_template('logs.html',namespacehtml = namespace, linkhtml = link)
+
 
 @app.route('/logs/all')
 def get_all_log(id):
