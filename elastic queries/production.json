@@ -254,3 +254,55 @@ POST song/_doc
    "duration":"",
    "streams":""
 }
+
+
+//collaborative recommend a song based on a users top songs
+
+GET topsongs/_search?search_type=count
+{
+  "query": {
+    "bool": {
+        "filter": {"and": {
+          "filters": [
+            {"term": {"songs": "DEUTSCHLAND"}},
+            {"term": {"songs": "Nothing else matters"}}
+          ]
+        }}
+    }  
+  },
+  "aggs": {
+    "bestMatch": {
+      "terms": {
+        "field": "songs",
+        "exclude": ["Nothing else matters","DEUTSCHLAND"],
+        "min_doc_count": 2
+      }
+    }
+  }
+}
+
+
+//collaborative recommend a artist based on a users top songs
+
+GET topartist/_search?search_type=count
+{
+  "query": {
+    "bool": {
+        "filter": {"and": {
+          "filters": [
+            {"term": {"artists": "Ramstein"}},
+            {"term": {"artists": "Metallica"}}
+          ]
+        }}
+    }  
+  },
+  "aggs": {
+    "bestMatch": {
+      "terms": {
+        "field": "artists",
+        "exclude": ["Ramstein","Metallica"],
+        "min_doc_count": 2
+      }
+    }
+  }
+}

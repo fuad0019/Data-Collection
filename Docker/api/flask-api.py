@@ -1,6 +1,6 @@
 from unicodedata import name
 from flask import Flask, jsonify, render_template, request
-from flask.helpers import send_file, send_from_directory 
+from flask.helpers import send_file, send_from_directory
 from flask.json import dumps
 from markupsafe import escape
 from elasticsearch import Elasticsearch
@@ -16,19 +16,20 @@ elastic = Elasticsearch(host="t05-elasticsearch")
 
 username = urllib.parse.quote_plus('username123')
 password = urllib.parse.quote_plus('password123')
-myclient = pymongo.MongoClient('mongodb://%s:%s@t05-mongodb:27017'% (username, password) )
+myclient = pymongo.MongoClient(
+    'mongodb://%s:%s@t05-mongodb:27017' % (username, password))
 mydb = myclient["t05"]
 mycol = mydb["users"]
 
-#log search links saved as saved-objects using the share kibana feauture
+# log search links saved as saved-objects using the share kibana feauture
 logSavedObjects = {
     'team05': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/c6697420-4a58-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
     'kube-system': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/4a1ecf90-4a13-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
     'longhorn': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/fb3f7f50-4aa3-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
     'fluent': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/73e45ac0-4aa4-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!f%2Cvalue%3A10000)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
     'ingress-nginx': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/5bb683f0-4aa5-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!f%2Cvalue%3A10000)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
-    'team01':'',
-    'team02':'',
+    'team01': '',
+    'team02': '',
     'team03': '',
     'team04': '',
     'team06': '',
@@ -51,13 +52,13 @@ app = Flask(__name__)
 def home():
     return render_template("index.html")
 
+
 @app.route('/users')
 def getUsers():
     users = []
-    for x in mycol.find({},{ "event": 0 }):
+    for x in mycol.find({}, {"event": 0}):
         users.append(x)
     return jsonify(users)
-    
 
 
 @app.route('/users/<userid>')
@@ -65,14 +66,14 @@ def get_user_profile(userid):
     # Get a user profile
     users = []
 
-    myquery = { "_id": userid }
+    myquery = {"_id": userid}
 
-    for x in mycol.find(myquery,{ "event": 0 }):
+    for x in mycol.find(myquery, {"event": 0}):
         users.append(x)
 
-    if(len(users)== 0):
+    if(len(users) == 0):
         return jsonify(users)
-     
+
     return jsonify(users[0])
 
 
@@ -114,8 +115,8 @@ def amount_song_played_by_user(user, song):
         "bool": {
             "must": [
                 {"match": {"user": user}},
-                {"match": {"song._id.keyword": song}}    
-                ]
+                {"match": {"song._id.keyword": song}}
+            ]
         }
     }
     }
@@ -170,6 +171,7 @@ def artist_amount_played(id):
 
     return jsonify(plays)
 
+
 @app.route('/ads/<id>/amount_clicked')
 def ad_amount_clicked(id):
     results = elastic.search(index="adClicks", doc_type="_doc", body={"query": {
@@ -182,6 +184,7 @@ def ad_amount_clicked(id):
     }
 
     return jsonify(clicks)
+
 
 @app.route('/songs/top')
 def get_top_songs():
@@ -257,7 +260,7 @@ def get_top_songs_for_user(id):
             ]
         }
     },
-        "aggs": {"artists": {"terms": {"field": "song.title.keyword"}}}})
+        "aggs": {"songs": {"terms": {"field": "song.title.keyword"}}}})
     topartists = []
     for i in results['aggregations']['artists']['buckets']:
         data = {
@@ -291,12 +294,13 @@ def get_top_genres_for_user(id):
 
     return jsonify(topartists)
 
+
 @app.route('/advertisements/<id>/amount_clicked')
 def get_advertisements_amount_clicked(id):
     results = elastic.search(index="adclicks.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
-                {"match": {"ad._id.keyword": id}}]}}})
+                {"match": {"ad.keyword": id}}]}}})
     x = results['hits'].get("total").get("value")
     plays = {
         "clicks": x
@@ -304,18 +308,19 @@ def get_advertisements_amount_clicked(id):
 
     return jsonify(plays)
 
+
 @app.route('/logs/<namespace>')
 def get_namespace_log(namespace):
     link = logSavedObjects[namespace]
 
-    return render_template('logs.html',namespacehtml = namespace, linkhtml = link)
+    return render_template('logs.html', namespacehtml=namespace, linkhtml=link)
 
 
 @app.route('/logs/all')
 def get_all_log(id):
 
-    
     return ""
+
 
 @app.route('/users/<id>/recommendation/songs')
 def get_genres_recommendation_for_user(id):
@@ -327,7 +332,7 @@ def get_genres_recommendation_for_user(id):
                 {"match": {
                     "user": id
                 }}
-            ]
+                ]
         }
     },
         "aggs": {"artists": {"terms": {"field": "song.genre.keyword"}}}})
@@ -370,7 +375,7 @@ def get_artist_recommendation_for_user(id):
                 {"match": {
                     "user": id
                 }}
-            ]
+                ]
         }
     },
         "aggs": {"artists": {"terms": {"field": "song.genre.keyword"}}}})
@@ -401,23 +406,29 @@ def get_artist_recommendation_for_user(id):
         songs.append(data)
     return jsonify(songs)
 
+
 @app.route('/users/<id>/recommendations/genres')
 def get_user_recommendations_genres(id):
 
     return ""
 
-@app.route('/users',methods=['POST'])
+
+@app.route('/users', methods=['POST'])
 def save_user():
-    if(request.is_json!=True):
+    if(request.is_json != True):
         return "This is not json"
 
     data = request.json
     mongodoc = json.loads(data)
-    
-    
- 
+
     x = mycol.insert_one(mongodoc)
     return str(x.inserted_id)
+
+
+@app.route('/visuals')
+def getvisualizations():
+    return render_template("visualization.html")
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
