@@ -39,51 +39,6 @@ def generate_userCreated(days, countries):
     return doc
     
 
-def generate_songs(n, artists):
-    
-    fake.add_provider(MusicProvider)
-    songs = []
-    for _ in range(n):
-        genSong = fake.text(max_nb_chars=20)[:-1]
-        songs.append({
-            "title": genSong,
-            "genre": fake.music_genre(),
-            "artist": random.choice(artists)
-        })
-    return songs
-
-def generate_artists(n):
-    artists = []
-    for _ in range(n):
-        artists.append(fake.name())
-    return artists
-
-
-def gen_artist(days):
-    genTimestamp = fake.date_time_between(start_date="-" + str(days) + "d", end_date="now").isoformat()
-    doc = {
-        "event": "artistCreated",
-        "artist_id": str(uuid.uuid4()),
-        "name": fake.name(),
-        "genre": fake.music_genre(),
-        "timestamp": genTimestamp
-    }
-    return doc
-
-def gen_song(days, artists):
-    fake.add_provider(MusicProvider)
-    genTimestamp = fake.date_time_between(start_date="-" + str(days) + "d", end_date="now").isoformat()
-    genSong = fake.text(max_nb_chars=20)[:-1]
-    doc = {
-        "event": "songCreated",
-        "song_id": str(uuid.uuid4()),
-        "title": genSong,
-        "genre": fake.music_genre(),
-        "artist": random.choice(artists),
-        "timestamp": genTimestamp
-    }
-    return doc
-
 def generate_songStarted(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         doc ={

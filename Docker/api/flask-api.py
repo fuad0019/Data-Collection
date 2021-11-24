@@ -59,6 +59,17 @@ def getUsers():
     for x in mycol.find({}, {"event": 0}):
         users.append(x)
     return jsonify(users)
+    
+@app.route('/users', methods=['POST'])
+def save_user():
+    if(request.is_json != True):
+        return "This is not json"
+
+    data = request.json
+    mongodoc = json.loads(data)
+
+    x = mycol.insert_one(mongodoc)
+    return str(x.inserted_id)
 
 
 @app.route('/users/<userid>')
@@ -412,17 +423,6 @@ def get_user_recommendations_genres(id):
 
     return ""
 
-
-@app.route('/users', methods=['POST'])
-def save_user():
-    if(request.is_json != True):
-        return "This is not json"
-
-    data = request.json
-    mongodoc = json.loads(data)
-
-    x = mycol.insert_one(mongodoc)
-    return str(x.inserted_id)
 
 
 @app.route('/visuals')

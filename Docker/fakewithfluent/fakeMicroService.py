@@ -35,8 +35,8 @@ logger.setLevel(logging.DEBUG)
 
 days = 14
 n = 10*10*14
-artists = generate_artists(3)
-songs = generate_songs(10,artists)
+artists = requests('elast')
+songs = requests('')
 
 
 #Creates some initial "user created" events first and logs them
@@ -79,10 +79,6 @@ while True:
         entry = generate_songPausedAndUnpaused(users,songs,days)
     elif switch == 7:
         entry = generate_adClicks(users,days)
-    elif switch == 8:
-        entry = gen_song(days,artists)
-    elif switch == 9:
-        entry = gen_artist(days)
         
 
     
