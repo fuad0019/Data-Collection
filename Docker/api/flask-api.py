@@ -260,7 +260,7 @@ def get_top_songs_for_user(id):
             ]
         }
     },
-        "aggs": {"songs": {"terms": {"field": "song.title.keyword"}}}})
+        "aggs": {"artists": {"terms": {"field": "song.title.keyword"}}}})
     topartists = []
     for i in results['aggregations']['artists']['buckets']:
         data = {
