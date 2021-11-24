@@ -96,7 +96,7 @@ def get_history(id):
 
 @app.route('/users/<id>/searches')
 def get_search_history(id):
-    results = elastic.search(index="searchqueries", doc_type="_doc", body={
+    results = elastic.search(index="search.team05.t05-fakemicroservice", doc_type="_doc", body={
                              "query": {"match": {"user": id}}})
 
     userSearchHistory = []
@@ -174,7 +174,7 @@ def artist_amount_played(id):
 
 @app.route('/ads/<id>/amount_clicked')
 def ad_amount_clicked(id):
-    results = elastic.search(index="adClicks", doc_type="_doc", body={"query": {
+    results = elastic.search(index="adclicks.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {"ad": id}}]}}})
@@ -294,7 +294,7 @@ def get_top_genres_for_user(id):
 
     return jsonify(topartists)
 
-
+'''
 @app.route('/advertisements/<id>/amount_clicked')
 def get_advertisements_amount_clicked(id):
     results = elastic.search(index="adclicks.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
@@ -307,7 +307,7 @@ def get_advertisements_amount_clicked(id):
     }
 
     return jsonify(plays)
-
+'''
 
 @app.route('/logs/<namespace>')
 def get_namespace_log(namespace):
