@@ -9,9 +9,9 @@ import urllib.request
 #songid = ""
 
 def test_home():
-    #check if return code? html?
-    print("to do: home line 27")
-
+    testing = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01')
+    output = testing.getcode()
+    assert 200 == output
 
 def test_getUsers():
     testing = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/users')
@@ -160,8 +160,25 @@ def test_get_top_genres_for_user():
 def test_get_advertisements_amount_clicked():
     print('help: how to get ad ids')
 
-def test_get_namespace_log():
+def test_get_namespace_log():#ingress-nginx
     print('help: HELP')
+    testing05 = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/logs/team05')
+    testingkube = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/logs/kube-system')
+    testinglonghorn = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/logs/longhorn')
+    testingfluent = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/logs/fluent')
+    testingingress = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/logs/ingress-nginx')
+    
+    output05 = testing05.getcode()
+    outputkube = testingkube.getcode()
+    outputlonghorn = testinglonghorn.getcode()
+    outputfluent = testingfluent.getcode()
+    outputingress = testingingress.getcode()
+    assert 200 == output05
+    assert 200 == outputkube
+    assert 200 == outputlonghorn
+    assert 200 == outputfluent
+    assert 200 == outputingress
+    
 '''
 def test_get_genres_recommendation_for_user():
     id = 1
