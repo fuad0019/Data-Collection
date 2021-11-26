@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-
   name: t05-fake-temp
   labels:
     app: t05-fake-temp

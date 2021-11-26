@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: t05-kibana
-
   labels:
     app: t05-kibana
 spec:
