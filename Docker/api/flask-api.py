@@ -315,23 +315,6 @@ def get_top_genres_for_user(id):
 
     return jsonify(topartists)
 
-
-'''
-@app.route('/advertisements/<id>/amount_clicked')
-def get_advertisements_amount_clicked(id):
-    results = elastic.search(index="adclicks.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
-        "bool": {
-            "must": [
-                {"match": {"ad.keyword": id}}]}}})
-    x = results['hits'].get("total").get("value")
-    plays = {
-        "clicks": x
-    }
-
-    return jsonify(plays)
-'''
-
-
 @app.route('/logs/<namespace>')
 def get_namespace_log(namespace):
     link = logSavedObjects[namespace]
@@ -459,16 +442,22 @@ def find_favorite_song(user):
         }
     },
         "aggs": {"songs": {"terms": {"field": "song.title.keyword"}}}})
+    topsongs = topSongsQuery['aggregations']['songs']['buckets']
+    if(len(topsongs)==0):
+        return None
     topSong = topSongsQuery['aggregations']['songs']['buckets'][0].get('key')
     return topSong
 
 # This method finds the top matching user.
 def find_matching_user(user):
+    favourite_song= find_favorite_song(user)
+    if(favourite_song== None):
+        return None
     userQueryResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
-                    "song.title.keyword": find_favorite_song(user)
+                    "song.title.keyword": favourite_song
                 }}
             ]
         }
@@ -482,11 +471,16 @@ def find_matching_user(user):
 
 # This methods finds and returns the top matching users.
 def find_matching_users(user):
+
+    favourite_song= find_favorite_song(user)
+    if(favourite_song== None):
+        return None
+
     userQueryResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
-                    "song.title.keyword": find_favorite_song(user)
+                    "song.title.keyword": favourite_song
                 }}
             ]
         }
@@ -506,11 +500,14 @@ def find_matching_users(user):
 
 # This method searches in ES for a users top 10 songs. This method will be used in a loop to get all of top 10 matching users top 10 songs.
 def get_song_test(id):
+    matching_user = find_matching_user(id)
+    if(matching_user==None):
+        return None
     songQueryResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
-                    "user": find_matching_user(id)}}]}},
+                    "user": matching_user}}]}},
         "aggs": {"songs": {"terms": {"field": "song.title.keyword", "exclude": find_favorite_song(id)}}}})
 
     topSongs = []
@@ -524,9 +521,13 @@ def get_song_test(id):
 
 # This method appends the top 10 users favorite 10 songs into an array. The output will be an array filled with arrays.
 def get_multiple_users_top_songs(user):
+    matching_users = find_matching_users(user)
     songs = []
 
-    for i in find_matching_users(user):
+    if(matching_users==None):
+        return None
+
+    for i in matching_users:
         songs.append(get_song_test(i['user']))
     return songs
 
@@ -534,6 +535,11 @@ def get_multiple_users_top_songs(user):
 # This method returns the top songs for each user without duplicates as json
 @app.route('/users/<id>/comparativerec/songs')
 def get_multiple_song_matches(id):
+
+    multiple_users_top_songs = get_multiple_users_top_songs(id)
+    if(multiple_users_top_songs == None):
+        return "[]"
+
     usersSongList = []
     for i in get_multiple_users_top_songs(id):
         usersSongList.append(i)
