@@ -197,6 +197,16 @@ def ad_amount_clicked(id):
     return jsonify(clicks)
 
 
+@app.route('/ads')
+def ad():
+    results = elastic.search(index="adclicks.team05.t05-fakemicroservice", doc_type="_doc", body={  "query": {
+    "match_all": {}
+  }})
+    x = results['hits']['hits']
+
+    return jsonify(x)
+
+
 @app.route('/songs/top')
 def get_top_songs():
     # Get top 10 songs started the last week

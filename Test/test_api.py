@@ -66,10 +66,25 @@ def test_get_history():
     assert "timestamp" in output
 
 
-''' index not found
+'''# test more
 def test_get_search_history():
     testing = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/users/'+globaluserid+'/searches')
-    songs = testing.read().decode('utf-8')
+    users = testing.read().decode('utf-8')
+
+    found = False
+    while(not found):
+        idstart = users.find("_id")+7
+        idend = users.find("_index")-9
+        userid = users[idstart:idend]
+
+        #print(userid)
+
+        testing = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/users/'+userid+'/songs')
+        output = testing.read().decode('utf-8')
+        if(len(output) > 8):
+            found=True
+        else:
+            users = users[idend+20:len(users)]
 
     assert "searchterm" in output
     assert "timestamp" in output
@@ -118,10 +133,20 @@ def test_artist_amount_played():
     output = testing.read().decode('utf-8')
     assert "plays" in output
 
-'''
+
 def test_ad_amount_clicked():#/ads/<id>/amount_clicked
-    print('to do: ad_amount_clicked')
-'''    
+    testing = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/ads')
+    output = testing.read().decode('utf-8')
+    
+    idstart = output.find("_id")+7
+    idend = output.find("_index")-9
+    adid = output[idstart:idend]
+
+    testing = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/ads/'+adid+'/amount_clicked')
+    output = testing.read().decode('utf-8')
+
+    assert "clicks" in output
+
 
 def test_get_top_songs():
     testing = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/songs/top')
@@ -200,7 +225,7 @@ def test_get_user_recommendations_genres():
 '''
 
 #print("1")
-#test_ad_amount_clicked()
+test_ad_amount_clicked()
 test_home()
 test_getUsers()
 test_get_user_profile()
