@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  namespace: team05
+
   name: t05-apisimple
   labels:
     app: t05-apisimple

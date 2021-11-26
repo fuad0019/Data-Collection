@@ -80,7 +80,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: t05-elasticsearch
-  namespace: team05
+
   labels:
     app: t05-elasticsearch
 spec:

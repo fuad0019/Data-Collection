@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: t05-mongodb
-  namespace: team05
+
 spec:
   serviceName: t05-mongodb
   replicas: 1
@@ -79,7 +79,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: t05-mongodb
-  namespace: team05
+
   labels:
     app: t05-mongodb
 spec:
