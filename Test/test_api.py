@@ -3,11 +3,6 @@ import pytest
 import json
 import urllib.request
 
-#problem: the test do run in parallel
-#globaluserid = "0b192a8d-ada6-4b8f-9bb2-44a82e01e52d"
-#globaluserid = ""
-#songid = ""
-
 def test_home():
     testing = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01')
     output = testing.getcode()
@@ -53,7 +48,7 @@ def test_get_history():
         idend = users.find("age")-9
         userid = users[idstart:idend]
 
-        print(userid)
+        #print(userid)
 
         testing = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/users/'+userid+'/songs')
         output = testing.read().decode('utf-8')
@@ -122,10 +117,12 @@ def test_artist_amount_played():
     testing = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/artists/'+globalartist+'/amount_played')
     output = testing.read().decode('utf-8')
     assert "plays" in output
+
 '''
-def test_ad_amount_clicked():
-    delete?
-'''
+def test_ad_amount_clicked():#/ads/<id>/amount_clicked
+    print('to do: ad_amount_clicked')
+'''    
+
 def test_get_top_songs():
     testing = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/songs/top')
     output = testing.read().decode('utf-8')
@@ -157,11 +154,12 @@ def test_get_top_genres_for_user():
     assert "genre" in output
     assert "plays" in output
 
+''' delete?
 def test_get_advertisements_amount_clicked():
     print('help: how to get ad ids')
+'''
 
-def test_get_namespace_log():#ingress-nginx
-    print('help: HELP')
+def test_get_namespace_log():
     testing05 = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/logs/team05')
     testingkube = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/logs/kube-system')
     testinglonghorn = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/logs/longhorn')
@@ -178,29 +176,31 @@ def test_get_namespace_log():#ingress-nginx
     assert 200 == outputlonghorn
     assert 200 == outputfluent
     assert 200 == outputingress
-    
-'''
+
+'''IndexError: list index out of range
 def test_get_genres_recommendation_for_user():
-    id = 1
-    #output = json.dumps(Docker.api.flaskapi.get_genres_recommendation_for_user(id))
-    test = "{\"title\": \"temp\", \"genre\": \"temp\", \"artist\": \"temp\"\"}"
-    output = json.dumps(test)
+    testing = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/users/' +globaluserid+ '/ecommendation/songs')
+    output = testing.read().decode('utf-8')
     assert "title" in output
     assert "genre" in output
     assert "artist" in output
+'''
 
-def test_get_artist_recommendation_for_user():
-    id = 1
-    #output = json.dumps(Docker.api.flaskapi.get_artist_recommendation_for_user(id))
-    test = "{\"artist_name\": \"temp\", \"genre\": \"temp\"\"}"
-    output = json.dumps(test)
+'''IndexError: list index out of range
+def test_get_artist_recommendation_for_user():#/users/<id>/recommendation/artists
+    testing = urllib.request.urlopen('http://opensuse.stream.stud-srv.sdu.dk/service01/users/' +globaluserid+ '/ecommendation/artists')
+    output = testing.read().decode('utf-8')
     assert "artist_name" in output
     assert "genre" in output
 '''
+
+'''
 def test_get_user_recommendations_genres():
     print('no output?')
+'''
 
-print("1")
+#print("1")
+#test_ad_amount_clicked()
 test_home()
 test_getUsers()
 test_get_user_profile()
@@ -210,7 +210,6 @@ test_amount_song_played_by_user()
 test_amount_artist_played_by_user()
 test_amount_song_played()
 test_artist_amount_played()
-#test_ad_amount_clicked()
 test_get_top_songs()
 test_get_top_artists()
 test_get_top_artist_for_user()
@@ -218,7 +217,7 @@ test_get_top_artist_for_user()
 test_get_top_genres_for_user()
 #test_get_genres_recommendation_for_user()
 #test_get_artist_recommendation_for_user()
-test_get_advertisements_amount_clicked()
+#test_get_advertisements_amount_clicked()
 test_get_namespace_log()
-test_get_user_recommendations_genres()
-print("2")
+#test_get_user_recommendations_genres()
+#print("2")
