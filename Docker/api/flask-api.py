@@ -60,7 +60,8 @@ def getUsers():
     for x in mycol.find({}, {"event": 0}):
         users.append(x)
     return jsonify(users)
-    
+
+
 @app.route('/users', methods=['POST'])
 def save_user():
     if(request.is_json != True):
@@ -200,9 +201,9 @@ def ad_amount_clicked(id):
 
 @app.route('/ads')
 def ad():
-    results = elastic.search(index="adclicks.team05.t05-fakemicroservice", doc_type="_doc", body={  "query": {
-    "match_all": {}
-  }})
+    results = elastic.search(index="adclicks.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+        "match_all": {}
+    }})
     x = results['hits']['hits']
 
     return jsonify(x)
@@ -278,7 +279,7 @@ def get_top_songs_for_user(id):
             "must": [
                 {"match": {
                     "user": id
-                }}  
+                }}
             ]
         }
     },
@@ -316,6 +317,7 @@ def get_top_genres_for_user(id):
 
     return jsonify(topartists)
 
+
 @app.route('/logs/<namespace>')
 def get_namespace_log(namespace):
     link = logSavedObjects[namespace]
@@ -339,7 +341,7 @@ def get_genres_recommendation_for_user(id):
                 {"match": {
                     "user": id
                 }}
-                    ]
+            ]
         }
     },
         "aggs": {"artists": {"terms": {"field": "song.genre.keyword"}}}})
@@ -382,7 +384,7 @@ def get_artist_recommendation_for_user(id):
                 {"match": {
                     "user": id
                 }}
-                    ]
+            ]
         }
     },
         "aggs": {"artists": {"terms": {"field": "song.genre.keyword"}}}})
@@ -420,7 +422,6 @@ def get_user_recommendations_genres(id):
     return ""
 
 
-
 @app.route('/visuals')
 def getvisualizations():
     return render_template("visualization.html")
@@ -444,37 +445,18 @@ def find_favorite_song(user):
     },
         "aggs": {"songs": {"terms": {"field": "song.title.keyword"}}}})
     topsongs = topSongsQuery['aggregations']['songs']['buckets']
-    if(len(topsongs)==0):
+    if(len(topsongs) == 0):
         return None
     topSong = topSongsQuery['aggregations']['songs']['buckets'][0].get('key')
     return topSong
 
-# This method finds the top matching user.
-def find_matching_user(user):
-    favourite_song= find_favorite_song(user)
-    if(favourite_song== None):
-        return None
-    userQueryResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
-        "bool": {
-            "must": [
-                {"match": {
-                    "song.title.keyword": favourite_song
-                }}
-            ]
-        }
-    },
-        "aggs": {"user": {"terms": {"field": "user.keyword", "exclude": user}}}})
-
-    topUser = userQueryResult['aggregations']['user']['buckets'][0].get(
-        'key')  # Use this for the top matching user
-
-    return topUser
-
 # This methods finds and returns the top matching users.
+
+
 def find_matching_users(user):
 
-    favourite_song= find_favorite_song(user)
-    if(favourite_song== None):
+    favourite_song = find_favorite_song(user)
+    if(favourite_song == None):
         return None
 
     userQueryResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
@@ -501,8 +483,8 @@ def find_matching_users(user):
 
 # This method searches in ES for a users top 10 songs. This method will be used in a loop to get all of top 10 matching users top 10 songs.
 def get_song_test(id):
-    matching_user = find_matching_user(id)
-    if(matching_user==None):
+    matching_user = find_matching_users(id)[0]['user']
+    if(matching_user == None):
         return None
     songQueryResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
@@ -525,7 +507,7 @@ def get_multiple_users_top_songs(user):
     matching_users = find_matching_users(user)
     songs = []
 
-    if(matching_users==None):
+    if(matching_users == None):
         return None
 
     for i in matching_users:
@@ -552,9 +534,10 @@ def get_multiple_song_matches(id):
             combinedSongList.append(j['Title'])
 
     checkDuplicate = set(combinedSongList)
+    sortedList = sorted(checkDuplicate)
 
     finalRecommendedSongList = []
-    for i in checkDuplicate:
+    for i in sortedList:
         data = {
             "Title": i
         }
