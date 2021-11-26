@@ -330,7 +330,7 @@ def get_all_log(id):
 
 
 @app.route('/users/<id>/recommendation/songs')
-def get_genres_recommendation_for_user(id):
+def get_user_recommendations_songs(id):
     topGenreResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "filter":
@@ -373,7 +373,7 @@ def get_genres_recommendation_for_user(id):
 
 
 @app.route('/users/<id>/recommendation/artists')
-def get_artist_recommendation_for_user(id):
+def get_user_recommendations_artists(id):
     topGenreResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "filter":
