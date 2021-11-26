@@ -439,7 +439,7 @@ def getvisualizations():
 
 # This method finds multiple users who also listens to the same song as you and returns them in a list
 def find_favorite_song(user):
-    topSongsQuery = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    topSongsQuery = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
@@ -454,7 +454,7 @@ def find_favorite_song(user):
 
 # This method finds the top matching user.
 def find_matching_user(user):
-    userQueryResult = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    userQueryResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
@@ -472,7 +472,7 @@ def find_matching_user(user):
 
 # This methods finds and returns the top matching users.
 def find_matching_users(user):
-    userQueryResult = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    userQueryResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
@@ -496,7 +496,7 @@ def find_matching_users(user):
 
 # This method searches in ES for a users top 10 songs. This method will be used in a loop to get all of top 10 matching users top 10 songs.
 def get_song_test(id):
-    songQueryResult = elastic.search(index="songstarted", doc_type="_doc", body={"query": {
+    songQueryResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
