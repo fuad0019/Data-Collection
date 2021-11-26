@@ -56,7 +56,7 @@ def generate_artist(n,days):
         
 
 artists = generate_artist(10,10)
-songs = generate_song(20,10,artists)
+songs = generate_song(40,10,artists)
 
 @app.route('/artists')
 def get_users():
