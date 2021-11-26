@@ -8,10 +8,11 @@ import json
 import pymongo
 import urllib.parse
 import logging
+import os
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
-
+serviceUrl = os.getenv("serviceurl", "http://opensuse.stream.stud-srv.sdu.dk")
 elastic = Elasticsearch(host="t05-elasticsearch")
 
 username = urllib.parse.quote_plus('username123')
@@ -23,11 +24,11 @@ mycol = mydb["users"]
 
 # log search links saved as saved-objects using the share kibana feauture
 logSavedObjects = {
-    'team05': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/c6697420-4a58-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
-    'kube-system': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/4a1ecf90-4a13-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
-    'longhorn': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/fb3f7f50-4aa3-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
-    'fluent': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/73e45ac0-4aa4-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!f%2Cvalue%3A10000)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
-    'ingress-nginx': 'http://opensuse.stream.stud-srv.sdu.dk/app/discover#/view/5bb683f0-4aa5-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!f%2Cvalue%3A10000)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
+    'team05': serviceUrl + '/app/discover#/view/c6697420-4a58-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
+    'kube-system': serviceUrl + '/app/discover#/view/4a1ecf90-4a13-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
+    'longhorn': serviceUrl + '/app/discover#/view/fb3f7f50-4aa3-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
+    'fluent': serviceUrl + '/app/discover#/view/73e45ac0-4aa4-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!f%2Cvalue%3A10000)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
+    'ingress-nginx': serviceUrl + '/app/discover#/view/5bb683f0-4aa5-11ec-a57c-8577c0017101?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!f%2Cvalue%3A10000)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))',
     'team01': '',
     'team02': '',
     'team03': '',
