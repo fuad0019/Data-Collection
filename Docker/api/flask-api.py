@@ -1,3 +1,4 @@
+from typing import Dict
 from unicodedata import name
 from flask import Flask, jsonify, render_template, request
 from flask.helpers import send_file, send_from_directory
@@ -7,10 +8,9 @@ from elasticsearch import Elasticsearch
 import json
 import pymongo
 import urllib.parse
-import logging
 import os
-from datetime import date, datetime
-from dateutil.relativedelta import relativedelta
+
+
 
 serviceUrl = os.getenv("serviceurl", "http://opensuse.stream.stud-srv.sdu.dk")
 elastic = Elasticsearch(host="t05-elasticsearch")
@@ -20,7 +20,7 @@ password = urllib.parse.quote_plus('password123')
 myclient = pymongo.MongoClient(
     'mongodb://%s:%s@t05-mongodb:27017' % (username, password))
 mydb = myclient["t05"]
-mycol = mydb["users"]
+
 
 # log search links saved as saved-objects using the share kibana feauture
 logSavedObjects = {
@@ -56,6 +56,7 @@ def home():
 
 @app.route('/users')
 def getUsers():
+    mycol = mydb["users"]
     users = []
     for x in mycol.find({}, {"event": 0}):
         users.append(x)
@@ -64,6 +65,8 @@ def getUsers():
 
 @app.route('/users', methods=['POST'])
 def save_user():
+    mycol = mydb["users"]
+
     if(request.is_json != True):
         return "This is not json"
 
@@ -77,17 +80,43 @@ def save_user():
 @app.route('/users/<userid>')
 def get_user_profile(userid):
     # Get a user profile
-    users = []
+    mycol = mydb["users"]
 
-    myquery = mycol.find_one({"_id": userid})
+    myquery = mycol.find_one({"_id": userid}, {"event": 0})
 
-    for x in mycol.find(myquery, {"event": 0}):
-        users.append(x)
+    return jsonify(myquery)
 
-    if(len(users) == 0):
-        return jsonify(users)
 
-    return jsonify(users[0])
+@app.route('/admins')
+def get_Admins():
+    mycol = mydb["admins"]
+    admins = []
+    for x in mycol.find({}, {"event": 0}):
+        admins.append(x)
+    return jsonify(admins)
+
+
+@app.route('/admins', methods=['POST'])
+def save_Admin():
+    mycol = mydb["admins"]
+    if(request.is_json != True):
+        return "This is not json"
+
+    data = request.json
+    mongodoc = json.loads(data)
+
+    x = mycol.insert_one(mongodoc)
+    return str(x.inserted_id)
+
+
+@app.route('/admins/<adminid>')
+def get_admin_profile(adminid):
+    # Get a user profile
+    mycol = mydb["admins"]
+
+    myquery = mycol.find_one({"_id": adminid},{"event": 0})
+
+    return str(isinstance(myquery, dict))
 
 
 # http://192.168.136.61:5000/history/41c6e6d7-b78c-413f-adb3-0567aa4996ef

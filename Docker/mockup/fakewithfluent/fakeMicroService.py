@@ -79,15 +79,22 @@ while True:
         print(res)
 
     elif switch == 5:
-        entry = generate_searchQueries(users,days)
+        doc = generate_adminCreated(days)
+        doc_json = json.dumps(doc)
+        users.append(doc)
+        res = requests.post('http://service01:80/admins', json=doc_json)
+        print(res)
+
     elif switch == 6:
-        entry = generate_songPausedAndUnpaused(users,songs,days)
+        entry = generate_searchQueries(users,days)
     elif switch == 7:
+        entry = generate_songPausedAndUnpaused(users,songs,days)
+    elif switch == 8:
         entry = generate_adClicks(users,days)
         
 
     
-    if(switch!=4):
+    if(switch!=4 or switch!=5):
         entry = json.dumps(entry)
         print(entry)
         #logging.info(entry)

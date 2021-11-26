@@ -38,6 +38,19 @@ def generate_userCreated(days, countries):
         }
         
     return doc
+
+def generate_adminCreated(days):
+    #https://www.w3schools.com/python/python_dictionaries.asp
+
+    genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
+    
+    doc = {
+            "event": "adminCreated",
+            "_id": str(uuid.uuid4()),
+            "timestamp": genTimestamp
+        }
+        
+    return doc
     
 
 def generate_songStarted(users,songs,days):
