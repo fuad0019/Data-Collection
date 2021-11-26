@@ -77,7 +77,7 @@ def get_user_profile(userid):
     # Get a user profile
     users = []
 
-    myquery = {"user_id": userid}
+    myquery = mycol.find_one({"_id": userid})
 
     for x in mycol.find(myquery, {"event": 0}):
         users.append(x)
@@ -533,9 +533,9 @@ def get_multiple_users_top_songs(user):
 
 # This method returns the top songs for each user without duplicates as json
 @app.route('/users/<id>/comparativerec/songs')
-def get_multiple_song_matches(user):
+def get_multiple_song_matches(id):
     usersSongList = []
-    for i in get_multiple_users_top_songs(user):
+    for i in get_multiple_users_top_songs(id):
         usersSongList.append(i)
 
     combinedSongList = []

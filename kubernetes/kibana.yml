@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: t05-kibana
-  namespace: team05
   labels:
     app: t05-kibana
 spec:

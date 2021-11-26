@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: team05
   name: t05-visualization
   labels:
     app: t05-visualization
