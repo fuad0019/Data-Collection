@@ -77,7 +77,7 @@ def get_user_profile(userid):
     # Get a user profile
     users = []
 
-    myquery = {"_id": userid}
+    myquery = {"user_id": userid}
 
     for x in mycol.find(myquery, {"event": 0}):
         users.append(x)
@@ -267,7 +267,7 @@ def get_top_songs_for_user(id):
             "must": [
                 {"match": {
                     "user": id
-                }}
+                }}  
             ]
         }
     },

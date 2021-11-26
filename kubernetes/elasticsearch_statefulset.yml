@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: t05-es-cluster
-  namespace: team05
 spec:
   serviceName: t05-elasticsearch
   replicas: 3 #change this for more pod instances

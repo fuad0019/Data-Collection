@@ -6,6 +6,9 @@ import json
 import requests
 from datetime import datetime
 from generator import *
+#from elasticsearch import Elasticsearch
+
+#elastic = Elasticsearch(host="t05-elasticsearch")
 
 
 
@@ -35,8 +38,8 @@ logger.setLevel(logging.DEBUG)
 
 days = 14
 n = 10*10*14
-artists = requests('elast')
-songs = requests('')
+artists = generate_artists(n, days)
+songs = generate_songs(n,artists, days)
 
 
 #Creates some initial "user created" events first and logs them
@@ -49,6 +52,8 @@ for _ in range(5):
     user = json.dumps(user) 
     res = requests.post('http://service01:80/users', json=user)
     print(res)
+
+
 
 #Creates events in a loop
 while True:
