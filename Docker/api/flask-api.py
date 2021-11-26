@@ -77,7 +77,7 @@ def get_user_profile(userid):
     # Get a user profile
     users = []
 
-    myquery = {"user_id": userid}
+    myquery = mycol.find_one({"user_id": userid})
 
     for x in mycol.find(myquery, {"event": 0}):
         users.append(x)
