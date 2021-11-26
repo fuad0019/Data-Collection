@@ -22,7 +22,7 @@ def generate_userCreated(days, countries):
     gender = ['male', 'female', 'other']
 
     genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
-    dob = fake.date_between(start_date='-60y', end_date='-10y').isoformat()
+    dob = fake.date_between(start_date='-60y', end_date='-10y')
     name = fake.name()
     doc = {
             "event": "userCreated",
@@ -31,8 +31,9 @@ def generate_userCreated(days, countries):
             "email": fake.ascii_email(),
             "gender": random.choice(gender),
             "country": random.choice(countries),
-            "dob": dob,
-            "age": str(relativedelta(datetime.today(), fake.date_between(start_date='-60y', end_date='-10y')).years),
+            "country_code": fake.country_code(),
+            "dob": dob.isoformat(),
+            "age": str(relativedelta(datetime.today(), dob).years),
             "timestamp": genTimestamp
         }
         
