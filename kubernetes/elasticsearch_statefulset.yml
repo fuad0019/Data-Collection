@@ -17,10 +17,12 @@ spec:
       - name: t05-elasticsearch
         image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
         resources:
-            limits:
+          limits:
               cpu: 100m
-            requests:
+              memory: 1Gi
+          requests:
               cpu: 50m
+              memory: 50Mi
         ports:
         - containerPort: 9200
           name: rest
