@@ -451,9 +451,6 @@ def get_user_recommendations_genres(id):
     return ""
 
 
-@app.route('/visuals')
-def getvisualizations():
-    return render_template("visualization.html")
 
 
 # _______________________________________________________________________________________________________________________________________________________________
