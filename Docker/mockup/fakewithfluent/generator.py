@@ -20,7 +20,6 @@ def generate_countries(n):
 def generate_userCreated(days, countries):
     #https://www.w3schools.com/python/python_dictionaries.asp
     gender = ['male', 'female', 'other']
-
     genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
     dob = fake.date_between(start_date='-60y', end_date='-10y')
     name = fake.name()
