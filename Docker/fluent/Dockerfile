@@ -32,9 +32,12 @@ RUN buildDeps="sudo make gcc g++ libc-dev libffi-dev" \
 
 RUN touch /fluentd/etc/disable.conf
 
+
+
 # Copy plugins
 COPY plugins /fluentd/plugins/
 COPY entrypoint.sh /fluentd/entrypoint.sh
+RUN chmod +x /fluentd/entrypoint.sh
 
 # Environment variables
 ENV FLUENTD_OPT=""
