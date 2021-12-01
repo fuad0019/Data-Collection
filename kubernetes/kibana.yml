@@ -21,9 +21,9 @@ spec:
         - containerPort: 5601
         env:
         - name: ELASTICSEARCH_URL
-          value: "http://t05-elasticsearch:9200"
+          value: "http://t05-elasticsearch.staging.svc.cluster.local:9200"
         - name: ELASTICSEARCH_HOSTS
-          value: "http://t05-elasticsearch:9200"
+          value: "t05-elasticsearch.staging.svc.cluster.local"
  
 ---
 apiVersion: v1
