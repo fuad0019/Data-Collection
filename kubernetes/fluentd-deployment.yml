@@ -18,11 +18,11 @@ spec:
         name: t05-fluentd
         resources:
           limits:
-              cpu: 100m
-              memory: 1Gi
+              cpu: 200m
+              memory: 200Mi
           requests:
               cpu: 50m
-              memory: 500Mi
+              memory: 100Mi
         ports:
         - containerPort: 24224
           protocol: TCP
