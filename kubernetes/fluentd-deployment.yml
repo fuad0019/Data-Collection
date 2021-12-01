@@ -16,6 +16,13 @@ spec:
       - image: fluent/fluentd-kubernetes-daemonset:v1-debian-elasticsearch
         imagePullPolicy: IfNotPresent
         name: t05-fluentd
+        resources:
+          limits:
+              cpu: 100m
+              memory: 1Gi
+          requests:
+              cpu: 50m
+              memory: 500Mi
         ports:
         - containerPort: 24224
           protocol: TCP
@@ -30,6 +37,7 @@ spec:
         name: config
       imagePullSecrets:
       - name: sdugitlab
+      
 ---
 
 kind: Service
