@@ -21,20 +21,22 @@ spec:
         - containerPort: 5601
         env:
         - name: ELASTICSEARCH_URL
-          value: "http://t05-elasticsearch.staging.svc.cluster.local:9200"
+          value: "http://t05-elasticsearch:9200"
         - name: ELASTICSEARCH_HOSTS
-          value: "http://t05-elasticsearch.staging.svc.cluster.local:9200"
+          value: "http://t05-elasticsearch:9200"
         resources:
           limits:
-              cpu: 100m
-              memory: 300Gi
+              cpu: 200m
+              memory: 800Mi
           requests:
               cpu: 50m
-              memory: 100Mi   
+              memory: 200Mi   
+          
+ 
 ---
 apiVersion: v1
 kind: Service
-metadata: 
+metadata:
   name: development
 spec:
   selector:
