@@ -26,7 +26,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: development
+  name: home
 spec: 
   type: ClusterIP
   selector:
