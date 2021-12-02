@@ -19,6 +19,13 @@ spec:
         image: gitlab.sdu.dk:5050/semester-project-e2021/team-05/template/docker/home
         ports:
         - containerPort: 5000
+        resources:
+          limits:
+              cpu: 100m
+              memory: 100Mi
+          requests:
+              cpu: 50m
+              memory: 50Mi 
       imagePullSecrets:
       - name: sdugitlab
  
