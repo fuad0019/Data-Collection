@@ -50,16 +50,16 @@ for _ in range(5):
     user = generate_userCreated(days, countries)
     users.append(user) 
     user = json.dumps(user) 
-    res = requests.post('http://service01:80/users', json=user)
-    print(res)
+    requests.post('http://service01:80/users', json=user)
 
 
 
 #Creates events in a loop
 while True:
-    rand = random.randint(1,9)
+    rand = random.randint(1,8)
     time.sleep(rand)
 
+    
     
     #The following code can probably be optimized. Feel free to do so!
     
@@ -75,16 +75,11 @@ while True:
         doc = generate_userCreated(days, countries)
         doc_json = json.dumps(doc)
         users.append(doc)
-        res = requests.post('http://service01:80/users', json=doc_json)
-        print(res)
-
+        requests.post('http://service01:80/users', json=doc_json)
     elif switch == 5:
         doc = generate_adminCreated(days)
         doc_json = json.dumps(doc)
-        users.append(doc)
-        res = requests.post('http://service01:80/admins', json=doc_json)
-        print(res)
-
+        requests.post('http://service01:80/admins', json=doc_json)
     elif switch == 6:
         entry = generate_searchQueries(users,days)
     elif switch == 7:
@@ -94,11 +89,11 @@ while True:
         
 
     
-    if(switch!=4 or switch!=5):
+    if(switch!=4) or (switch!=5):
         entry = json.dumps(entry)
         print(entry)
         #logging.info(entry)
-        logger.info(entry)
+        #logger.info(entry)
         #id += 1
         
     
