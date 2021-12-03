@@ -78,9 +78,10 @@ def generate_songSkipped(users,songs,days):
 def generate_songPausedAndUnpaused(users,songs,days):
         genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
         events = ["songPaused", "songUnpaused"]
+        user= random.choice(users)
         doc ={
                 "event": random.choice(events),
-                "user": random.choice(users)["_id"],
+                "user": user["_id"],
                 "song": random.choice(songs),
                 "timestamp": genTimestamp,
                 "duration": random.randint(0,180)
