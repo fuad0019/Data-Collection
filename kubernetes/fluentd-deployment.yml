@@ -16,13 +16,6 @@ spec:
       - image: fluent/fluentd-kubernetes-daemonset:v1-debian-elasticsearch
         imagePullPolicy: IfNotPresent
         name: t05-fluentd
-        resources:
-          limits:
-              cpu: 150m
-              memory: 100Mi
-          requests:
-              cpu: 50m
-              memory: 50Mi
         ports:
         - containerPort: 24224
           protocol: TCP

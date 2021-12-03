@@ -8,13 +8,23 @@ data:
     # This source gets all logs from local docker host
 
     @include pods-fluent.conf
-
     @include tag-namespace-and-pod
+    @include json-parser
+    @include trash
     @include aggregate-to-index
+
     
     #@include file-fluent.conf
     @include elastic-fluent.conf
     
+  
+  trash: |-
+    <match metrics-server.prometheus-adapter>
+      @type null
+    </match>
+    <match metrics-server.metrics-server>
+      @type null
+    </match>
 
   pods-fluent.conf: |-
     <source>
@@ -44,10 +54,11 @@ data:
       </rule>
     </match>
     
-
+  json-parser: |-
     <filter team05.t05-fakemicroservice>
       @type parser
       key_name log
+      hash_value_field parsed
       <parse>
         @type json
       </parse> 
