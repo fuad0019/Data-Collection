@@ -10,21 +10,14 @@ data:
     @include pods-fluent.conf
     @include tag-namespace-and-pod
     @include json-parser
-    @include trash
-    @include aggregate-to-index
-
     
+    @include aggregate-to-index
     #@include file-fluent.conf
+    @include fluent-trash
     @include elastic-fluent.conf
     
   
-  trash: |-
-    <match metrics-server.prometheus-adapter>
-      @type null
-    </match>
-    <match metrics-server.metrics-server>
-      @type null
-    </match>
+ 
 
   pods-fluent.conf: |-
     <source>
@@ -58,7 +51,6 @@ data:
     <filter team05.t05-fakemicroservice>
       @type parser
       key_name log
-      hash_value_field parsed
       <parse>
         @type json
       </parse> 
@@ -75,10 +67,24 @@ data:
     </match>
 
   file-fluent.conf: |-
+    <match **.team05.t05-fakemicroservice>
+      @type file
+      path /tmp/fake.log
+    </match>
+    
     <match **>
       @type file
       path /tmp/file.log
     </match>
+
+  fluent-trash: |-
+    <match metrics-server.prometheus-adapter>
+      @type null
+    </match>
+
+    <match metrics-server.metrics-server>
+      @type null
+    </match>    
 
   elastic-fluent.conf: |-
     <match **>
@@ -98,7 +104,3 @@ data:
       </buffer>
     </match>
 
-
-
-
-  

@@ -19,13 +19,6 @@ spec:
         image: gitlab.sdu.dk:5050/semester-project-e2021/team-05/template/data-puller 
         ports:
         - containerPort: 5000
-        resources:
-          limits:
-              cpu: 150m
-              memory: 100Mi
-          requests:
-              cpu: 50m
-              memory: 50Mi
         env:
         - name: DATASEARCH_DOMAIN
           value: t05-datasearch

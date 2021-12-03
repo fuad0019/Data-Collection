@@ -20,13 +20,6 @@ spec:
         - containerPort: 27017
           protocol: TCP
         args: ["--dbpath","/data/db"]
-        resources:
-          limits:
-            cpu: 100m
-            memory: 250Mi
-          requests:
-            cpu: 10m
-            memory: 50Mi
         livenessProbe:
           exec:
             command:

@@ -19,10 +19,8 @@ spec:
         resources:
           limits:
               cpu: 150m
-              memory: 850Mi
           requests:
               cpu: 100m
-              memory: 100Mi
         ports:
         - containerPort: 9200
           name: rest
