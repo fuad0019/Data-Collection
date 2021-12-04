@@ -22,5 +22,12 @@ spec:
         env:
         - name: DATASEARCH_DOMAIN
           value: http://t05-datasearch
+        resources:
+          limits:
+              cpu: 100m
+              memory: 100Mi
+          requests:
+              cpu: 50m
+              memory: 50Mi
       imagePullSecrets:
       - name: sdugitlab

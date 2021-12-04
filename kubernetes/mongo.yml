@@ -17,6 +17,13 @@ spec:
       - image: mongo
         name: t05-mongodb
         ports:
+        resources:
+          limits:
+              cpu: 100m
+              memory: 250Mi
+          requests:
+              cpu: 10m
+              memory: 50Mi
         - containerPort: 27017
           protocol: TCP
         args: ["--dbpath","/data/db"]
