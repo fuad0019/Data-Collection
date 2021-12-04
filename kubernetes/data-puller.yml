@@ -21,6 +21,6 @@ spec:
         - containerPort: 5000
         env:
         - name: DATASEARCH_DOMAIN
-          value: t05-datasearch
+          value: http://t05-datasearch
       imagePullSecrets:
       - name: sdugitlab

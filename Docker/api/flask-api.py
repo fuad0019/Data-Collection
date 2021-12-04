@@ -59,7 +59,7 @@ def getUsers():
     mycol = mydb["users"]
     users = []
     for x in mycol.find({}, {"event": 0}):
-        users.append(x)
+        users.append(x["_id"])
     return jsonify(users)
 
 

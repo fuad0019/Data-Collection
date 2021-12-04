@@ -16,9 +16,6 @@ data:
     @include fluent-trash
     @include elastic-fluent.conf
     
-  
- 
-
   pods-fluent.conf: |-
     <source>
       @type forward
@@ -95,6 +92,7 @@ data:
       tag_key @log_name
       index_name ${tag}
       flush_interval 10s
+      request_timeout 20s 
       <buffer>
         @type file
         path /opt/bitnami/fluentd/logs/buffers/logs.buffer
