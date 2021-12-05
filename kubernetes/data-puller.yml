@@ -31,3 +31,16 @@ spec:
               memory: 50Mi
       imagePullSecrets:
       - name: sdugitlab
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: service03
+spec: 
+  type: ClusterIP
+  selector:
+    app: t05-data-puller
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
