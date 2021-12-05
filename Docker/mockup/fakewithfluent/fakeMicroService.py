@@ -1,7 +1,5 @@
-import logging
 import random
 import time
-import os
 import json
 import requests
 from datetime import datetime
@@ -10,7 +8,7 @@ from generator import *
 
 days = 14
 n = 10*10*14
-artists = generate_artists(n, days)
+artists = generate_artists(20, days)
 songs = generate_songs(n,artists, days)
 
 
