@@ -16,13 +16,6 @@ spec:
       - image: gitlab.sdu.dk:5050/semester-project-e2021/team-05/template/docker/fluentd
         imagePullPolicy: IfNotPresent
         name: t05-fluentd
-        resources:
-          limits:
-              cpu: 100m
-              memory: 100Mi
-          requests:
-              cpu: 50m
-              memory: 50Mi
         ports:
         - containerPort: 24224
           protocol: TCP

@@ -91,7 +91,7 @@ data:
       include_tag_key true
       tag_key @log_name
       index_name ${tag}
-      flush_interval 10s
+      flush_interval 5s
       request_timeout 20s 
       <buffer>
         @type file
