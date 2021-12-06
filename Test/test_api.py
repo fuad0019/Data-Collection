@@ -176,6 +176,7 @@ def test_get_top_genres_for_user():
     output = testing.read().decode('utf-8')
     assert "genre" in output
     assert "plays" in output
+'''
 
 def test_get_namespace_log():
     testing05 = urllib.request.urlopen(domain + '/service01/logs/team05')
@@ -194,6 +195,7 @@ def test_get_namespace_log():
     assert 200 == outputlonghorn
     assert 200 == outputfluent
     assert 200 == outputingress
+'''
 
 '''IndexError: list index out of range
 def test_get_user_recommendations_songs():
@@ -237,7 +239,7 @@ def test_data_puller():
     assert 'Users is up to date' in output
 '''
 test_ad_amount_clicked()
-test_home()
+#test_home()
 test_getUsers()
 test_get_user_profile()
 test_get_history()
@@ -254,5 +256,5 @@ test_get_top_genres_for_user()
 #test_get_genres_recommendation_for_user()
 #test_get_artist_recommendation_for_user()
 #test_get_user_recommendations_genres()
-test_get_namespace_log()
+#test_get_namespace_log()
 #test_get_multiple_song_matches()

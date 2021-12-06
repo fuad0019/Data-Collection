@@ -11,7 +11,6 @@ import urllib.parse
 import os
 
 
-
 serviceUrl = os.getenv("serviceurl", "http://opensuse.stream.stud-srv.sdu.dk")
 elastic = Elasticsearch(host="t05-elasticsearch")
 
@@ -92,7 +91,7 @@ def get_Admins():
     mycol = mydb["admins"]
     admins = []
     for x in mycol.find({}, {"event": 0}):
-        admins.append(x)
+        admins.append(x["_id"])
     return jsonify(admins)
 
 
@@ -114,7 +113,7 @@ def get_admin_profile(adminid):
     # Get a user profile
     mycol = mydb["admins"]
 
-    myquery = mycol.find_one({"_id": adminid},{"event": 0})
+    myquery = mycol.find_one({"_id": adminid}, {"event": 0})
 
     return str(isinstance(myquery, dict))
 
@@ -360,96 +359,117 @@ def get_all_log(id):
     return ""
 
 
-@app.route('/users/<id>/recommendation/songs')
+
 def get_user_recommendations_songs(id):
+    timeintervarl = "30"
     topGenreResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "filter":
-                {"range": {"timestamp": {"gte": "now-7d/d", "lt": "now/d"}}},
+                {"range": {"timestamp": {"gte": "now-" +
+                                         timeintervarl + "d/d", "lt": "now/d"}}},
             "must": [
                 {"match": {
                     "user": id
                 }}
-            ]
+                ]
         }
     },
-        "aggs": {"artists": {"terms": {"field": "song.genre.keyword"}}}})
-    topgenres = []
-    for i in topGenreResult['aggregations']['artists']['buckets']:
-        data = {
-            "genre": i["key"],
-            "plays": i["doc_count"]
-        }
-        topgenres.append(data)
-
-    topgenresForUser = [topgenres[0].get('genre')]
-
-    topGenreResult = elastic.search(index="songs", doc_type="_doc", body={"query": {
-        "more_like_this": {
-            "fields": ["genre.keyword"],
-            "like": [topgenresForUser[0]],
-            "min_term_freq": 1,
-            "max_query_terms": 2
+        "aggs": {
+        "genres": {
+            "terms": {
+                "field": "song.genre.keyword"
+            }
+        },
+        "songs": {
+            "terms": {
+                "field": "song.title.keyword"
+            }
         }
     }})
-    songs = []
-    for i in topGenreResult['hits'].get('hits'):
-        data = {
-            "title": i["_source"]["title"],
-            "genre": i["_source"]["genre"],
-            "artist": i["_source"]["artist"]
+
+    topSongs = []
+    for i in topGenreResult['aggregations']['songs']['buckets']:
+        topSongs.append({"match": {"title.keyword": i["key"]}})
+
+    topgenres = []
+    for i in topGenreResult['aggregations']['genres']['buckets']:
+        topgenres.append({"match": {"genre.keyword": i["key"]}})
+
+    if(len(topgenres) == 0):
+        return 'This user has not listened to anything the last ' + timeintervarl + ' days'
+
+    topGenreResult = elastic.search(index="songs", doc_type="_doc", body={
+        "query": {
+            "bool": {
+                "should": topgenres,
+                "must_not": topSongs
+            }
         }
-        songs.append(data)
-    return jsonify(songs)
+    })
+    songs = set()
+    for i in topGenreResult['hits'].get('hits'):
+        songs.add(i["_source"]["title"])
+    songslist = list(songs)
+    return jsonify(songslist)
 
 
 @app.route('/users/<id>/recommendation/artists')
 def get_user_recommendations_artists(id):
+    timeintervarl = "30"
     topGenreResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "filter":
-                {"range": {"timestamp": {"gte": "now-7d/d", "lt": "now/d"}}},
+                {"range": {"timestamp": {"gte": "now-" +
+                                         timeintervarl + "d/d", "lt": "now/d"}}},
             "must": [
                 {"match": {
                     "user": id
                 }}
-            ]
+                ]
         }
     },
-        "aggs": {"artists": {"terms": {"field": "song.genre.keyword"}}}})
-    topgenres = []
-    for i in topGenreResult['aggregations']['artists']['buckets']:
-        data = {
-            "genre": i["key"],
-            "plays": i["doc_count"]
-        }
-        topgenres.append(data)
-
-    topgenresForUser = [topgenres[0].get('genre')]
-
-    topGenreResult = elastic.search(index="artists", doc_type="_doc", body={"query": {
-        "more_like_this": {
-            "fields": ["genre.keyword"],
-            "like": [topgenresForUser[0]],
-            "min_term_freq": 1,
-            "max_query_terms": 2
+        "aggs": {
+        "genres": {
+            "terms": {
+                "field": "song.genre.keyword"
+            }
+        },
+        "artists": {
+            "terms": {
+                "field": "song.artist.keyword"
+            }
         }
     }})
-    songs = []
-    for i in topGenreResult['hits'].get('hits'):
-        data = {
-            "artist_name": i["_source"]["name"],
-            "genre": i["_source"]["genre"],
+
+    topArtists = []
+    for i in topGenreResult['aggregations']['artists']['buckets']:
+        topArtists.append({"match": {"artist.keyword": i["key"]}})
+
+    topgenres = []
+    for i in topGenreResult['aggregations']['genres']['buckets']:
+        topgenres.append({"match": {"genre.keyword": i["key"]}})
+
+    if(len(topgenres) == 0):
+        return 'This user has not listened to anything the last ' + timeintervarl + ' days'
+
+    topGenreResult = elastic.search(index="songs", doc_type="_doc", body={
+        "query": {
+            "bool": {
+                "should": topgenres,
+                "must_not": topArtists
+            }
         }
-        songs.append(data)
-    return jsonify(songs)
+    })
 
+    artists = set()
 
-@app.route('/users/<id>/recommendations/genres')
-def get_user_recommendations_genres(id):
+    for i in topGenreResult['hits'].get('hits'):
+        artists.add(i["_source"]["artist"])
 
-    return ""
+    #Turning set into list, because set is not json serializable    
+    artistslist = list(artists)
 
+    return jsonify(artistslist)
 
 
 
@@ -458,7 +478,7 @@ def get_user_recommendations_genres(id):
 # _______________________________________________________________________________________________________________________________________________________________
 # COMPARATIVE RECOMMENDATION
 
-# This method finds multiple users who also listens to the same song as you and returns them in a list
+# This method finds a users favourite song
 def find_favorite_song(user):
     topSongsQuery = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
@@ -497,6 +517,7 @@ def find_matching_users(user):
         "aggs": {"user": {"terms": {"field": "user.keyword", "exclude": user}}}})
 
     topUsers = []
+    
     for i in userQueryResult['aggregations']['user']['buckets']:
         data = {
             "user": i["key"],
@@ -542,15 +563,17 @@ def get_multiple_users_top_songs(user):
 
 
 # This method returns the top songs for each user without duplicates as json
-@app.route('/users/<id>/comparativerec/songs')
+@app.route('/users/<id>/recommendation/songs')
 def get_multiple_song_matches(id):
 
     multiple_users_top_songs = get_multiple_users_top_songs(id)
     if(multiple_users_top_songs == None):
-        return "[]"
+        return "The user hasn't listened to songs"
+    elif(len(multiple_users_top_songs)== 0):
+        return get_user_recommendations_songs(id)
 
     usersSongList = []
-    for i in get_multiple_users_top_songs(id):
+    for i in multiple_users_top_songs:
         usersSongList.append(i)
 
     combinedSongList = []
@@ -564,10 +587,7 @@ def get_multiple_song_matches(id):
 
     finalRecommendedSongList = []
     for i in sortedList:
-        data = {
-            "Title": i
-        }
-        finalRecommendedSongList.append(data)
+        finalRecommendedSongList.append(i)
 
     return jsonify(finalRecommendedSongList)
 

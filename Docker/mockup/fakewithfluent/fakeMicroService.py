@@ -3,14 +3,27 @@ import time
 import json
 import requests
 from datetime import datetime
+from elasticsearch import Elasticsearch
 from generator import *
+
+es = Elasticsearch("http://t05-elasticsearch:9200")
 
 
 days = 14
 n = 10*10*14
-artists = generate_artists(20, days)
-songs = generate_songs(n,artists, days)
+genres = generate_genres(5)
 
+artists = []
+for _ in range(10):
+    artist = generate_artists(genres,days)
+    artists.append(artist)
+    res = es.index(index="artists", id=str(uuid.uuid4()),body=artist)
+
+songs = []
+for _ in range(20):
+    song = generate_song(genres,artists, days)
+    songs.append(song)
+    res = es.index(index="songs", id=str(uuid.uuid4()),body=song)
 
 #Creates some initial "user created" events first and logs them
 users = []

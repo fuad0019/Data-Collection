@@ -1,4 +1,5 @@
-from typing import List
+from json.decoder import JSONDecodeError
+from typing import List, cast
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
 import tqdm
@@ -28,18 +29,35 @@ def pull_all_users():
         yield document
 
 def pull_all_songs():
-    res = requests.get(dataSearchdomain + "/songs")
+    res = requests.get(dataSearchdomain + "/get/song/all")
     data = res.text
-    data = json.loads(data)
+    
+    try:
+        data = json.loads(data)
+    except JSONDecodeError:
+        return []
+
+    songs = []
+    
     for document in data:
-        yield document
+        songs.append(document) 
+    return songs
+    
 
 def pull_all_artists():
-    res = requests.get(dataSearchdomain + "/artists")
+    res = requests.get(dataSearchdomain + "/get/artist/all")
     data = res.text
-    data = json.loads(data)
+    
+    try:
+        data = json.loads(data)
+    except JSONDecodeError:
+        return []
+
+    artists = []
+    
     for document in data:
-        yield document
+        artists.append(document) 
+    return artists
 
 
 def sendToElastic(index_name,list):
@@ -66,7 +84,8 @@ cacheArtists={}
 #Same as below
 @app.route('/pullUsers')
 def get_users():
-    allUsers = pull_all_users()    
+    allUsers = pull_all_users() 
+       
     newUsers={}
     for user in allUsers:
         if(len(cacheUsers)!=0):
@@ -92,7 +111,9 @@ def get_users():
 @app.route('/pullSongs')
 def get_songs():
     #Get all songs from datasearch
-    allSongs = pull_all_songs()
+    allSongs = pull_all_songs()   
+    if(len(allSongs)==0):
+        return "Data search link not working"
     newSongs={}
     for song in allSongs:
         if(len(cacheSongs)!=0):
@@ -108,7 +129,6 @@ def get_songs():
 
         #Cache the new songs
     cacheSongs.update(newSongs)
-
         #If list of new songs is empty, then up-to-date, if not then update elastic
     if(len(newSongs)==0):
         return "Songs is up to date" 
@@ -121,6 +141,8 @@ def get_songs():
 @app.route('/pullArtists')
 def get_artists():
     allArtists = pull_all_artists()
+    if(len(allArtists)==0):
+        return "Data search link not working"
     newArtists={}
     for artist in allArtists:
         if(len(cacheArtists)!=0):

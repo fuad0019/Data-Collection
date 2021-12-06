@@ -9,6 +9,8 @@ from dateutil.relativedelta import relativedelta
 
 
 fake = Faker()
+fake.add_provider(MusicProvider)
+
 
 
 def generate_countries(n):
@@ -112,32 +114,32 @@ def generate_adClicks(users,days):
 
         return doc
 
-def generate_songs(n, artists, days):
+def generate_song(genres,artists, days):
     genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
 
-    fake.add_provider(MusicProvider)
-    songs = []
-    for _ in range(n):
-        genSong = fake.text(max_nb_chars=20)[:-1]
-        songs.append({
+    genSong = fake.text(max_nb_chars=20)[:-1]
+    song = {
             "song_id": str(uuid.uuid4()),
             "title": genSong,
-            "genre": random.choice(artists)["name"],
-            "artist": fake.name(),
+            "genre": random.choice(genres),
+            "artist": random.choice(artists)["name"],
             "timestamp": genTimestamp
-        })
-    return songs
+        }
+    return song
 
 
-def generate_artists(n, days):
+def generate_artist(genres,days):
     genTimestamp = fake.date_time_between(start_date="-"+str(days)+"d", end_date="now").isoformat()
-    fake.add_provider(MusicProvider)
-    artists = []
-    for _ in range(n):
-        artists.append({
+    artist = {
             "artist_id": str(uuid.uuid4()),
             "name": fake.name(),
-            "genre": fake.music_genre(),
+            "genre": random.choice(genres),
             "timestamp": genTimestamp
-        })
-    return artists
+        }
+    return artist
+
+def generate_genres(n):
+    genres = []
+    for _ in range(n):
+        genres.append(fake.music_genre())
+    return genres

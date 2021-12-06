@@ -58,12 +58,12 @@ def generate_artist(n,days):
 artists = generate_artist(10,10)
 songs = generate_song(40,10,artists)
 
-@app.route('/artists')
+@app.route('/get/artist/all')
 def get_users():
 
     return jsonify(artists)
 
-@app.route('/songs')
+@app.route('/get/song/all')
 def get_songs():
 
     return jsonify(songs)

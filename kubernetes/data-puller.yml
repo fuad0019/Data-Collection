@@ -42,5 +42,5 @@ spec:
     app: t05-data-puller
   ports:
     - protocol: TCP
-      port: 5000
+      port: 80
       targetPort: 5000
