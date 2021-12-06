@@ -26,11 +26,11 @@ spec:
           value: "http://t05-elasticsearch:9200"
         resources:
           limits:
-              cpu: 100m
-              memory: 500Mi
+              cpu: 150m
+              memory: 600Mi
           requests:
               cpu: 50m
-              memory: 200Mi   
+              memory: 50Mi  
 
  
 ---

@@ -18,11 +18,11 @@ spec:
         name: t05-mongodb
         resources:
           limits:
-              cpu: 100m
-              memory: 250Mi
+            cpu: 100m
+            memory: 250Mi
           requests:
-              cpu: 10m
-              memory: 50Mi
+            cpu: 10m
+            memory: 50Mi
         ports:
         - containerPort: 27017
           protocol: TCP

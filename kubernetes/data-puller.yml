@@ -24,7 +24,7 @@ spec:
           value: http://t05-datasearch
         resources:
           limits:
-              cpu: 100m
+              cpu: 150m
               memory: 100Mi
           requests:
               cpu: 50m
