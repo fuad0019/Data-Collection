@@ -118,10 +118,9 @@ def get_admin_profile(adminid):
     return str(isinstance(myquery, dict))
 
 
-# http://192.168.136.61:5000/history/41c6e6d7-b78c-413f-adb3-0567aa4996ef
 
 @app.route('/users/<id>/songs')
-def get_history(id):
+def get_song_history(id):
     results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={
                              "query": {"match": {"user": id}}})
 
@@ -133,6 +132,21 @@ def get_history(id):
         }
         userHistory.append(data)
     return jsonify(userHistory)
+
+@app.route('/users/<id>/artists')
+def get_artist_history(id):
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={
+                             "query": {"match": {"user": id}}})
+
+    userHistory = []
+    for i in results['hits'].get("hits"):
+        data = {
+            "artist": i['_source']["song"]["artist"],
+            "timestamp": i['_source']["timestamp"]
+        }
+        userHistory.append(data)
+    return jsonify(userHistory)
+
 
 
 @app.route('/users/<id>/searches')
@@ -353,66 +367,6 @@ def get_namespace_log(namespace):
     return render_template('logs.html', namespacehtml=namespace, linkhtml=link)
 
 
-@app.route('/logs/all')
-def get_all_log(id):
-
-    return ""
-
-
-
-def get_user_recommendations_songs(id):
-    timeintervarl = "30"
-    topGenreResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
-        "bool": {
-            "filter":
-                {"range": {"timestamp": {"gte": "now-" +
-                                         timeintervarl + "d/d", "lt": "now/d"}}},
-            "must": [
-                {"match": {
-                    "user": id
-                }}
-                ]
-        }
-    },
-        "aggs": {
-        "genres": {
-            "terms": {
-                "field": "song.genre.keyword"
-            }
-        },
-        "songs": {
-            "terms": {
-                "field": "song.title.keyword"
-            }
-        }
-    }})
-
-    topSongs = []
-    for i in topGenreResult['aggregations']['songs']['buckets']:
-        topSongs.append({"match": {"title.keyword": i["key"]}})
-
-    topgenres = []
-    for i in topGenreResult['aggregations']['genres']['buckets']:
-        topgenres.append({"match": {"genre.keyword": i["key"]}})
-
-    if(len(topgenres) == 0):
-        return 'This user has not listened to anything the last ' + timeintervarl + ' days'
-
-    topGenreResult = elastic.search(index="songs", doc_type="_doc", body={
-        "query": {
-            "bool": {
-                "should": topgenres,
-                "must_not": topSongs
-            }
-        }
-    })
-    songs = set()
-    for i in topGenreResult['hits'].get('hits'):
-        songs.add(i["_source"]["title"])
-    songslist = list(songs)
-    return jsonify(songslist)
-
-
 @app.route('/users/<id>/recommendation/artists')
 def get_user_recommendations_artists(id):
     timeintervarl = "30"
@@ -473,28 +427,112 @@ def get_user_recommendations_artists(id):
 
 
 
-# _______________________________________________________________________________________________________________________________________________________________
-# _______________________________________________________________________________________________________________________________________________________________
-# _______________________________________________________________________________________________________________________________________________________________
-# COMPARATIVE RECOMMENDATION
+# This method returns the top songs for each user without duplicates as json
+@app.route('/users/<id>/recommendation/songs')
+def get_multiple_song_matches(id):
 
-# This method finds a users favourite song
-def find_favorite_song(user):
-    topSongsQuery = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+    multiple_users_top_songs = get_multiple_users_top_songs(id)
+    if(multiple_users_top_songs == None):
+        return "The user hasn't listened to songs"
+    elif(len(multiple_users_top_songs)== 0):
+        return get_user_recommendations_songs(id)
+
+    noDuplicates = set(multiple_users_top_songs)
+    sortedList = sorted(noDuplicates)
+
+    return jsonify(sortedList)
+
+
+
+
+def get_user_recommendations_songs(id):
+    timeintervarl = "30"
+    topGenreResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+        "bool": {
+            "filter":
+                {"range": {"timestamp": {"gte": "now-" +
+                                         timeintervarl + "d/d", "lt": "now/d"}}},
+            "must": [
+                {"match": {
+                    "user": id
+                }}
+                ]
+        }
+    },
+        "aggs": {
+        "genres": {
+            "terms": {
+                "field": "song.genre.keyword"
+            }
+        },
+        "songs": {
+            "terms": {
+                "field": "song.title.keyword"
+            }
+        }
+    }})
+
+    topSongs = []
+    for i in topGenreResult['aggregations']['songs']['buckets']:
+        topSongs.append({"match": {"title.keyword": i["key"]}})
+
+    topgenres = []
+    for i in topGenreResult['aggregations']['genres']['buckets']:
+        topgenres.append({"match": {"genre.keyword": i["key"]}})
+
+    if(len(topgenres) == 0):
+        return 'This user has not listened to anything the last ' + timeintervarl + ' days'
+
+    topGenreResult = elastic.search(index="songs", doc_type="_doc", body={
+        "query": {
+            "bool": {
+                "should": topgenres,
+                "must_not": topSongs
+            }
+        }
+    })
+    songs = set()
+    for i in topGenreResult['hits'].get('hits'):
+        songs.add(i["_source"]["title"])
+    songslist = list(songs)
+    return jsonify(songslist)
+
+
+# This method appends the top 10 users favorite 10 songs into an array. The output will be an array filled with arrays.
+def get_multiple_users_top_songs(user):
+    matching_users = find_matching_users(user)
+    songs = []
+
+    if(matching_users == None):
+        return None
+    elif(len(matching_users)==0):
+        return []
+
+    for i in matching_users:
+        songs.extend(get_top_songs(i))
+    return songs
+
+# This method searches in ES for a users top 10 songs. This method will be used in a loop to get all of top 10 matching users top 10 songs.
+def get_top_songs(id):
+    matching_users = find_matching_users(id)
+    if(matching_users == None):
+        return None
+    elif(len(matching_users)==0):
+        return []
+
+    songQueryResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
-                    "user": user
-                }}
-            ]
-        }
-    },
-        "aggs": {"songs": {"terms": {"field": "song.title.keyword"}}}})
-    topsongs = topSongsQuery['aggregations']['songs']['buckets']
-    if(len(topsongs) == 0):
-        return None
-    topSong = topSongsQuery['aggregations']['songs']['buckets'][0].get('key')
-    return topSong
+                    "user": matching_users[0]}}]}},
+        "aggs": {"songs": {"terms": {"field": "song.title.keyword", "exclude": find_favorite_song(id)}}}})
+
+    topSongs = []
+    for i in songQueryResult['aggregations']['songs']['buckets']:
+        topSongs.append(i["key"])
+    return topSongs
+
+
 
 # This methods finds and returns the top matching users.
 
@@ -519,77 +557,27 @@ def find_matching_users(user):
     topUsers = []
     
     for i in userQueryResult['aggregations']['user']['buckets']:
-        data = {
-            "user": i["key"],
-            "count": i["doc_count"]
-        }
-        topUsers.append(data)
+        topUsers.append(i["key"])
 
     return topUsers
 
-
-# This method searches in ES for a users top 10 songs. This method will be used in a loop to get all of top 10 matching users top 10 songs.
-def get_song_test(id):
-    matching_user = find_matching_users(id)[0]['user']
-    if(matching_user == None):
-        return None
-    songQueryResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+# This method finds a users favourite song
+def find_favorite_song(user):
+    topSongsQuery = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
-                    "user": matching_user}}]}},
-        "aggs": {"songs": {"terms": {"field": "song.title.keyword", "exclude": find_favorite_song(id)}}}})
-
-    topSongs = []
-    for i in songQueryResult['aggregations']['songs']['buckets']:
-        data = {
-            "Title": i["key"]
+                    "user": user
+                }}
+            ]
         }
-        topSongs.append(data)
-    return topSongs
-
-
-# This method appends the top 10 users favorite 10 songs into an array. The output will be an array filled with arrays.
-def get_multiple_users_top_songs(user):
-    matching_users = find_matching_users(user)
-    songs = []
-
-    if(matching_users == None):
+    },
+        "aggs": {"songs": {"terms": {"field": "song.title.keyword"}}}})
+    topsongs = topSongsQuery['aggregations']['songs']['buckets']
+    if(len(topsongs) == 0):
         return None
-
-    for i in matching_users:
-        songs.append(get_song_test(i['user']))
-    return songs
-
-
-# This method returns the top songs for each user without duplicates as json
-@app.route('/users/<id>/recommendation/songs')
-def get_multiple_song_matches(id):
-
-    multiple_users_top_songs = get_multiple_users_top_songs(id)
-    if(multiple_users_top_songs == None):
-        return "The user hasn't listened to songs"
-    elif(len(multiple_users_top_songs)== 0):
-        return get_user_recommendations_songs(id)
-
-    usersSongList = []
-    for i in multiple_users_top_songs:
-        usersSongList.append(i)
-
-    combinedSongList = []
-
-    for i in usersSongList:
-        for j in i:
-            combinedSongList.append(j['Title'])
-
-    checkDuplicate = set(combinedSongList)
-    sortedList = sorted(checkDuplicate)
-
-    finalRecommendedSongList = []
-    for i in sortedList:
-        finalRecommendedSongList.append(i)
-
-    return jsonify(finalRecommendedSongList)
+    topSong = topSongsQuery['aggregations']['songs']['buckets'][0].get('key')
+    return topSong
 
 
 if __name__ == '__main__':
