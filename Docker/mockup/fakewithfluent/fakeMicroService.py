@@ -6,7 +6,7 @@ from datetime import datetime
 from elasticsearch import Elasticsearch
 from generator import *
 
-es = Elasticsearch("http://t05-elasticsearch:9200")
+es = Elasticsearch("http://t05-elasticsearch.staging.svc.cluster.local:9200")
 
 
 days = 14
