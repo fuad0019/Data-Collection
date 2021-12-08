@@ -15,21 +15,15 @@ def test_home():
 
 def test_getUsers():
     testing = urllib.request.urlopen(domain + '/service01/users')
-    output = testing.read().decode('utf-8')
-    assert "_id" in output
-    assert "age" in output
-    assert "country" in output
-    assert "dob" in output
-    assert "email" in output
-    assert "gender" in output
-    assert "name" in output
+    output = testing.getcode()
+    assert 200 == output
 
 def test_get_user_profile():
     testing = urllib.request.urlopen(domain + '/service01/users')
     output = testing.read().decode('utf-8')
     
-    idstart = output.find("_id")+7
-    idend = output.find("age")-9
+    idstart = output.find("\"")+1
+    idend = idstart + 36
     userid = output[idstart:idend]
 
     testing = urllib.request.urlopen(domain + '/service01/users/'+userid)
@@ -49,8 +43,8 @@ def test_get_history():
 
     found = False
     while(not found):
-        idstart = users.find("_id")+7
-        idend = users.find("age")-9
+        idstart = users.find("\"")+1
+        idend = idstart + 36
         userid = users[idstart:idend]
 
         testing = urllib.request.urlopen(domain + '/service01/users/'+userid+'/songs')
@@ -74,8 +68,8 @@ def test_get_search_history():
 
     found = False
     while(not found):
-        idstart = users.find("_id")+7
-        idend = users.find("age")-9
+        idstart = users.find("\"")+1
+        idend = idstart + 36
         userid = users[idstart:idend]
 
         testing = urllib.request.urlopen(domain + '/service01/users/'+userid+'/searches')
@@ -94,13 +88,13 @@ def test_amount_song_played_by_user():
     songs = testing.read().decode('utf-8')
     
     idstart = songs.find("title")+9
-    idend = songs.find("timestamp")-15
+    idend = songs.find("}")-5
     songname = songs[idstart:idend]
 
     songname = songname.replace(" ", "%20")
     global globalsong
     globalsong = songname
-    
+ 
     testing = urllib.request.urlopen(domain + '/service01/users/'+globaluserid+'/songs/'+songname+'/amount_played')
     output = testing.read().decode('utf-8')
     assert "plays" in output
@@ -176,7 +170,6 @@ def test_get_top_genres_for_user():
     output = testing.read().decode('utf-8')
     assert "genre" in output
     assert "plays" in output
-'''
 
 def test_get_namespace_log():
     testing05 = urllib.request.urlopen(domain + '/service01/logs/team05')
@@ -195,7 +188,6 @@ def test_get_namespace_log():
     assert 200 == outputlonghorn
     assert 200 == outputfluent
     assert 200 == outputingress
-'''
 
 '''IndexError: list index out of range
 def test_get_user_recommendations_songs():
