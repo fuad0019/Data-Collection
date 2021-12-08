@@ -86,7 +86,7 @@ data:
   elastic-fluent.conf: |-
     <match **>
       @type elasticsearch
-      host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch.staging.svc.cluster.local'}"
+      host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
       port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
       include_tag_key true
       tag_key @log_name
