@@ -189,38 +189,17 @@ def test_get_namespace_log():
     assert 200 == outputfluent
     assert 200 == outputingress
 
-'''IndexError: list index out of range
 def test_get_user_recommendations_songs():
     testing = urllib.request.urlopen(domain + '/service01/users/' +globaluserid+ '/recommendation/songs')
-    output = testing.read().decode('utf-8')
-    assert "title" in output
-    assert "genre" in output
-    assert "artist" in output
-'''
+    output = testing.getcode()
+    assert 200 == output
 
-'''IndexError: list index out of range
-def test_get_user_recommendations_artists():#/users/<id>/recommendation/artists
+def test_get_user_recommendations_artists():
     testing = urllib.request.urlopen(domain + '/service01/users/' +globaluserid+ '/recommendation/artists')
-    output = testing.read().decode('utf-8')
-    assert "artist_name" in output
-    assert "genre" in output
-'''
+    output = testing.getcode()
+    assert 200 == output
 
 '''
-def test_get_user_recommendations_genres():
-    print('no output?')
-'''
-
-
-'''
-
-
-
-def test_get_multiple_song_matches():
-    testing = urllib.request.urlopen(domain + '/service01/users/' +globaluserid+ '/comparativerec/songs')
-    output = testing.read().decode('utf-8')
-    assert "Title" in output
-
 def test_data_puller():
     testing = urllib.request.urlopen(domain + '/service03/pullUsers')
     output = testing.getcode()
@@ -231,7 +210,6 @@ def test_data_puller():
     assert 'Users is up to date' in output
 '''
 test_ad_amount_clicked()
-#test_home()
 test_getUsers()
 test_get_user_profile()
 test_get_history()
@@ -245,8 +223,6 @@ test_get_top_artists()
 test_get_top_artist_for_user()
 test_get_top_songs_for_user()
 test_get_top_genres_for_user()
-#test_get_genres_recommendation_for_user()
-#test_get_artist_recommendation_for_user()
-#test_get_user_recommendations_genres()
-#test_get_namespace_log()
-#test_get_multiple_song_matches()
+test_get_user_recommendations_songs()
+test_get_user_recommendations_artists()
+test_get_namespace_log()
