@@ -47,7 +47,6 @@ def test_get_history():
         idend = idstart + 36
         userid = users[idstart:idend]
         url= domain + '/service01/users/'+userid+'/songs'
-        print(url)
 
         testing = urllib.request.urlopen(url)
         output = testing.read().decode('utf-8')
