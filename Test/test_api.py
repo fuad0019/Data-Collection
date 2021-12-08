@@ -53,7 +53,7 @@ def test_get_history():
         if(len(output) > 8):
             found=True
         else:
-            users = users[idend+20:len(users)]
+            users = users[idend+2:len(users)]
     global globaluserid
     globaluserid = userid
     #print(globaluserid)
@@ -78,7 +78,7 @@ def test_get_search_history():
         if(len(output) > 8):
             found=True
         else:
-            users = users[idend+20:len(users)]
+            users = users[idend+2:len(users)]
 
     assert "searchterm" in output
     assert "timestamp" in output
