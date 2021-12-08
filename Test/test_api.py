@@ -26,7 +26,7 @@ def test_get_user_profile():
     idend = idstart + 36
     userid = output[idstart:idend]
 
-    testing = urllib.request.urlopen(domain + '/service01/users/'+userid)
+    testing = urllib.request.urlopen(domain+'/service01/users/'+userid)
     output = testing.read().decode('utf-8')
 
     assert "_id" in output
@@ -46,8 +46,10 @@ def test_get_history():
         idstart = users.find("\"")+1
         idend = idstart + 36
         userid = users[idstart:idend]
+        url= domain + '/service01/users/'+userid+'/songs'
+        print(url)
 
-        testing = urllib.request.urlopen(domain + '/service01/users/'+userid+'/songs')
+        testing = urllib.request.urlopen(url)
         output = testing.read().decode('utf-8')
         if(len(output) > 8):
             found=True
