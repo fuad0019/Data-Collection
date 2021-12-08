@@ -22,7 +22,7 @@ spec:
               memory: 3Gi
           requests:
               cpu: 100m
-              memory: 600Mi
+              memory: 1Gi
         ports:
         - containerPort: 9200
           name: rest
