@@ -99,7 +99,7 @@ def get_Admins():
 def save_Admin():
     mycol = mydb["admins"]
     if(request.is_json != True):
-        return "This is not json"
+        return "This is not json at all"
 
     data = request.json
     mongodoc = json.loads(data)
