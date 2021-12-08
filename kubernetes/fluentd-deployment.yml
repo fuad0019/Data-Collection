@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: t05-fluentd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t05-fluentd
+  template:
+    metadata:
+      labels:
+        app: t05-fluentd
+    spec:
+      containers:
+      - image: gitlab.sdu.dk:5050/semester-project-e2021/team-05/template/docker/fluentd
+        imagePullPolicy: IfNotPresent
+        name: t05-fluentd
+        ports:
+        - containerPort: 24224
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /fluentd/etc
+          name: config
+          readOnly: true
+        resources:
+          limits:
+              cpu: 150m
+              memory: 100Mi
+          requests:
+              cpu: 50m
+              memory: 50Mi
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: t05-fluentd-config
+        name: config
+      imagePullSecrets:
+      - name: sdugitlab
+      
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: t05-fluentd
+  labels:
+    app: t05-fluentd
+spec:
+  selector:
+    app: t05-fluentd
+  ports:
+  - port: 24224
+    protocol: TCP
+    targetPort: 24224

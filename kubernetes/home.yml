@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: t05-home
+  labels:
+    app: t05-home
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t05-home
+  template:
+    metadata:
+      labels:
+        app: t05-home
+    spec:
+      containers:
+      - name: t05-home
+        image: gitlab.sdu.dk:5050/semester-project-e2021/team-05/template/docker/home
+        ports:
+        - containerPort: 5000
+        resources:
+          limits:
+              cpu: 100m
+              memory: 100Mi
+          requests:
+              cpu: 50m
+              memory: 50Mi 
+      imagePullSecrets:
+      - name: sdugitlab
+ 
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: home
+spec: 
+  type: ClusterIP
+  selector:
+    app: t05-home
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000

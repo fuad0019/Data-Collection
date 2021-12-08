@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: t05-fluentd-config
+data:
+  fluent.conf: |-
+    ################################################################
+    # This source gets all logs from local docker host
+
+    @include pods-fluent.conf
+    @include tag-namespace-and-pod
+    @include json-parser
+    
+    @include aggregate-to-index
+    #@include file-fluent.conf
+    @include fluent-trash
+    @include elastic-fluent.conf
+    
+  pods-fluent.conf: |-
+    <source>
+      @type forward
+      bind 0.0.0.0
+      port 24224
+    </source>
+    
+
+  tag-namespace-and-pod: |-
+    <match var.log.containers**>
+      @type rewrite_tag_filter
+      <rule>
+        key $.kubernetes.container_name
+        pattern ^(.+)$
+        tag $1
+      </rule>
+    </match>
+
+    
+    <match /^((?!\.).)+$/>
+      @type rewrite_tag_filter
+      <rule>
+        key  $.kubernetes.namespace_name
+        pattern ^(.+)$
+        tag     $1.${tag}
+      </rule>
+    </match>
+    
+  json-parser: |-
+    <filter team05.t05-fakemicroservice>
+      @type parser
+      key_name log
+      <parse>
+        @type json
+      </parse> 
+    </filter>
+  
+  aggregate-to-index: |-
+    <match team05.t05-fakemicroservice>
+      @type rewrite_tag_filter
+      <rule>
+        key $.event
+        pattern ^(.+)$
+        tag $1.${tag}
+      </rule> 
+    </match>
+
+  file-fluent.conf: |-
+    <match **.team05.t05-fakemicroservice>
+      @type file
+      path /tmp/fake.log
+    </match>
+    
+    <match **>
+      @type file
+      path /tmp/file.log
+    </match>
+
+  fluent-trash: |-
+    <match metrics-server.prometheus-adapter>
+      @type null
+    </match>
+
+    <match metrics-server.metrics-server>
+      @type null
+    </match>    
+
+  elastic-fluent.conf: |-
+    <match **>
+      @type elasticsearch
+      host "#{ENV['FLUENT_ELASTICSEARCH_HOST'] || 't05-elasticsearch'}"
+      port "#{ENV['FLUENT_ELASTICSEARCH_PORT'] || '9200'}"
+      include_tag_key true
+      tag_key @log_name
+      index_name ${tag}
+      flush_interval 5s
+      request_timeout 20s 
+      <buffer>
+        @type file
+        path /opt/bitnami/fluentd/logs/buffers/logs.buffer
+        flush_thread_count 2
+        flush_interval 5s
+        chunk_limit_size 2m
+      </buffer>
+    </match>
+

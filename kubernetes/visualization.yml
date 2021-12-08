@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: t05-visualization
+  labels:
+    app: t05-visualization
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t05-visualization
+  template:
+    metadata:
+      labels:
+        app: t05-visualization
+    spec:
+      containers:
+      - name: t05-visualization
+        image: gitlab.sdu.dk:5050/semester-project-e2021/team-05/template/docker/visualization:latest
+        ports:
+        - containerPort: 5000
+        resources:
+          limits:
+              cpu: 150m
+              memory: 800Mi
+          requests:
+              cpu: 100m
+              memory: 100Mi
+      imagePullSecrets:
+      - name: sdugitlab
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: service02
+spec: 
+  type: ClusterIP
+  selector:
+    app: t05-visualization
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000

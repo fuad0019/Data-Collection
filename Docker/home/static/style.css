@@ -1,0 +1,62 @@
+
+
+  body {
+    height: 100vh;
+  
+  }
+ 
+.callout {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 50px;
+}
+.video-bg,
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: block;
+}
+.video-overlay {
+    background: rgba(0,0,0,0.5);
+    pointer-events: none; /* Allows right clicking on the video to pause etc */
+}
+.video-bg video {
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+}
+.callout-content {
+    position: relative;
+    text-align: center;
+    margin: 50px 0; /* This adds some space around the video */
+    color: #FFF;
+    text-shadow: 0 0 5px rgba(0,0,0,0.4);
+}
+
+img {
+    width: 40px;
+}
+
+.content {
+    color: white;
+    padding-top: 20px ;
+    padding-bottom: 500px;
+    align-items: center;
+    width: 60%;
+
+ 
+
+}
+
+.o{
+      background-color: black;
+      padding-left: 30%;
+}

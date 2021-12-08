@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: t05-fluentd-config
+  namespace: fluent
+data:
+  fluent.conf: |-
+    ################################################################
+    # This source gets all logs from local docker host
+    @include pods-kind-fluent.conf
+    @include forward-fluent.conf
+
+  pods-kind-fluent.conf: |-
+    <source>
+      @type tail
+      read_from_head true
+      tag *
+      path /var/log/containers/*.log
+      pos_file /var/log/fluentd-containers.log.pos
+      exclude_path ["/var/log/containers/t05-fluent*"]
+      <parse>
+        @type json
+        time_key timestamp
+        time_format %iso8601
+      </parse>
+    </source>
+ 
+    <filter **>
+      @type  kubernetes_metadata
+    </filter>
+  
+  forward-fluent.conf: |-
+    <match **>
+      @type forward
+      send_timeout 60s
+      recover_wait 10s
+      hard_timeout 60s
+      <server>
+        host t05-fluentd.team05.svc.cluster.local
+        port 24224
+      </server>
+
+      <secondary>
+        @type file
+        path /var/log/fluent/forward-failed
+      </secondary>
+    </match>

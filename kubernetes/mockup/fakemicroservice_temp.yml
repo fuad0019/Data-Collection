@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: t05-fake-temp
+  labels:
+    app: t05-fake-temp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t05-fake-temp
+  template:
+    metadata:
+      labels:
+        app: t05-fake-temp
+    spec:
+      containers:
+      - name: t05-fake-temp
+        image: gitlab.sdu.dk:5050/semester-project-e2021/team-05/template/docker/fakewithoutfluent
+        resources:
+          limits:
+              cpu: 150m
+              memory: 100Mi
+          requests:
+              cpu: 50m
+              memory: 50Mi
+      imagePullSecrets:
+      - name: sdugitlab

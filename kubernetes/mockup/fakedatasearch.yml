@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: t05-datasearch
+  labels:
+    app: t05-datasearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t05-datasearch
+  template:
+    metadata:
+      labels:
+        app: t05-datasearch
+    spec:
+      containers:
+      - name: t05-datasearch
+        image: gitlab.sdu.dk:5050/semester-project-e2021/team-05/template/docker/fakedatasearch 
+      imagePullSecrets:
+      - name: sdugitlab
+
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: t05-datasearch
+spec: 
+  type: ClusterIP
+  selector:
+    app: t05-datasearch
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000

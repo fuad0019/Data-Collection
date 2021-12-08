@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: t05-apisimple
+  labels:
+    app: t05-apisimple
+spec:
+  template:
+    metadata:
+      labels:
+        app: t05-apisimple
+    spec:
+      #https://stackoverflow.com/questions/40530946/what-is-the-difference-between-always-and-on-failure-for-kubernetes-restart-poli
+      restartPolicy: Never
+      containers:
+      - name: t05-apisimple
+        image: gitlab.sdu.dk:5050/semester-project-e2021/team-05/template/docker/simple

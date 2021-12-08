@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: t05-fakemicroservice
+  labels:
+    app: t05-fakemicroservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t05-fakemicroservice
+  template:
+    metadata:
+      labels:
+        app: t05-fakemicroservice
+    spec:
+      containers:
+      - name: t05-fakemicroservice
+        image: gitlab.sdu.dk:5050/semester-project-e2021/team-05/template/docker/fakewithfluent
+      imagePullSecrets:
+      - name: sdugitlab

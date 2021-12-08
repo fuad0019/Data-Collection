@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: t05-mongodb
+spec:
+  serviceName: t05-mongodb
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t05-mongodb
+  template:
+    metadata:
+      labels:
+        app: t05-mongodb
+    spec:
+      containers:
+      - image: mongo
+        name: t05-mongodb
+        resources:
+          limits:
+            cpu: 100m
+            memory: 250Mi
+          requests:
+            cpu: 10m
+            memory: 50Mi
+        ports:
+        - containerPort: 27017
+          protocol: TCP
+        args: ["--dbpath","/data/db"]
+        livenessProbe:
+          exec:
+            command:
+              - mongo
+              - --disableImplicitSessions
+              - --eval
+              - "db.adminCommand('ping')"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+              - mongo
+              - --disableImplicitSessions
+              - --eval
+              - "db.adminCommand('ping')"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 6
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: username123
+          #valueFrom:
+            #secretKeyRef:
+              #name: mongo-secret
+              #key: username
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: password123
+          #valueFrom:
+            #secretKeyRef:
+              #name: mongo-secret
+              #key: password
+        - name: MONGO_INITDB_DATABASE
+          value: t05
+        volumeMounts:
+        - name: data
+          mountPath: /data/db
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        app: t05-mongodb
+    spec:
+      accessModes: [ "ReadWriteOnce" ] #storage class will give an error if not set on kubernetes cluster
+      storageClassName: longhorn # Storage class currently unknown, using default
+      resources:
+        requests:
+          storage: 1Gi #change this for more persistence storage. Was 100Gi before.
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: t05-mongodb
+  labels:
+    app: t05-mongodb
+spec:
+  selector:
+    app: t05-mongodb
+  ports:
+  - port: 27017
+    protocol: TCP
+    targetPort: 27017
