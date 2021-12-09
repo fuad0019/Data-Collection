@@ -356,7 +356,7 @@ def get_top_artist_for_user(id):
         "aggs": {"artists": {"terms": {"field": "song.artist.keyword"}}}})
 
     except NotFoundError:
-        return "There's No Data"
+        return "There's no Data"
 
     topartists = []
     for i in results['aggregations']['artists']['buckets']:
