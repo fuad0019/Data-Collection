@@ -433,7 +433,7 @@ def get_multiple_song_matches(id):
 
     multiple_users_top_songs = get_multiple_users_top_songs(id)
     if(multiple_users_top_songs == None):
-        return "The user hasn't listened to songs"
+        return "The user has not listened to songs"
     elif(len(multiple_users_top_songs)== 0):
         return get_user_recommendations_songs(id)
 
