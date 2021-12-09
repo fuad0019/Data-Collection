@@ -5,7 +5,6 @@ from flask.helpers import send_file, send_from_directory
 from flask.json import dumps
 from markupsafe import escape
 from elasticsearch import Elasticsearch
-from elasticsearch.exceptions import NotFoundError
 import json
 import pymongo
 import urllib.parse
@@ -122,12 +121,8 @@ def get_admin_profile(adminid):
 
 @app.route('/users/<id>/songs')
 def get_song_history(id):
-
-    try:
-        results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={
                              "query": {"match": {"user": id}}})
-    except NotFoundError:
-        return "There's No Data"
 
     userHistory = []
     for i in results['hits'].get("hits"):
@@ -140,11 +135,8 @@ def get_song_history(id):
 
 @app.route('/users/<id>/artists')
 def get_artist_history(id):
-    try:
-        results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={
                              "query": {"match": {"user": id}}})
-    except NotFoundError:
-        return "There's No Data"
 
     userHistory = []
     for i in results['hits'].get("hits"):
@@ -159,12 +151,8 @@ def get_artist_history(id):
 
 @app.route('/users/<id>/searches')
 def get_search_history(id):
-
-    try:
-        results = elastic.search(index="search.team05.t05-fakemicroservice", doc_type="_doc", body={
+    results = elastic.search(index="search.team05.t05-fakemicroservice", doc_type="_doc", body={
                              "query": {"match": {"user": id}}})
-    except NotFoundError:
-        return "There's No Data"
 
     userSearchHistory = []
     for i in results['hits'].get("hits"):
@@ -178,20 +166,16 @@ def get_search_history(id):
 
 @app.route('/users/<user>/songs/<song>/amount_played')
 def amount_song_played_by_user(user, song):
-    try:
-        results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
-            "bool": {
-                "must": [
-                    {"match": {"user": user}},
-                    {"match": {"song._id.keyword": song}}
-                ]
-            }
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+        "bool": {
+            "must": [
+                {"match": {"user": user}},
+                {"match": {"song._id.keyword": song}}
+            ]
         }
-        }
-        )
-    except NotFoundError:
-        return "There's No Data"
-
+    }
+    }
+    )
     x = results['hits'].get("total").get("value")
     plays = {
         "plays": x
@@ -202,36 +186,25 @@ def amount_song_played_by_user(user, song):
 
 @app.route('/users/<user>/artists/<artist>/amount_played')
 def amount_artist_played_by_user(user, artist):
-    try:
-        results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
-            "bool": {
-                "must": [
-                    {"match": {"user": user}},
-                    {"match": {"song.artist.keyword": artist}}]}}})
-
-    except NotFoundError:
-        return "There's No Data"
-
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+        "bool": {
+            "must": [
+                {"match": {"user": user}},
+                {"match": {"song.artist.keyword": artist}}]}}})
     x = results['hits'].get("total").get("value")
     plays = {
-            "plays": x
-        }
-    
+        "plays": x
+    }
 
     return jsonify(plays)
 
 
 @app.route('/songs/<id>/amount_played')
 def amount_song_played(id):
-    try:
-        results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {"song._id.keyword": id}}]}}})
-
-    except NotFoundError:
-        return "There's No Data"
-
     x = results['hits'].get("total").get("value")
     plays = {
         "plays": x
@@ -242,14 +215,10 @@ def amount_song_played(id):
 
 @app.route('/artists/<id>/amount_played')
 def artist_amount_played(id):
-    try:
-        results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {"song.artist.keyword": id}}]}}})
-    except NotFoundError:
-        return "There's No Data"
-
     x = results['hits'].get("total").get("value")
     plays = {
         "plays": x
@@ -260,15 +229,10 @@ def artist_amount_played(id):
 
 @app.route('/ads/<id>/amount_clicked')
 def ad_amount_clicked(id):
-    try:
-        results = elastic.search(index="adclicks.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+    results = elastic.search(index="adclicks.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {"ad": id}}]}}})
-
-    except NotFoundError:
-        return "There's No Data"
-
     x = results['hits'].get("total").get("value")
     clicks = {
         "clicks": x
@@ -279,14 +243,9 @@ def ad_amount_clicked(id):
 
 @app.route('/ads')
 def ad():
-    try:
-        results = elastic.search(index="adclicks.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+    results = elastic.search(index="adclicks.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "match_all": {}
     }})
-
-    except NotFoundError:
-        return "There's No Data"
-
     x = results['hits']['hits']
 
     return jsonify(x)
@@ -295,15 +254,11 @@ def ad():
 @app.route('/songs/top')
 def get_top_songs():
     # Get top 10 songs started the last week
-    try:
-        results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "filter":
                 {"range": {"timestamp": {"gte": "now-7d/d", "lt": "now/d"}}}}},
         "aggs": {"songs": {"terms": {"field": "song.title.keyword", "size": 10}}}})
-
-    except NotFoundError:
-        return "There's No Data"
 
     topsongs = []
     for i in results['aggregations']['songs']['buckets']:
@@ -319,15 +274,11 @@ def get_top_songs():
 @app.route('/artists/top')
 def get_top_artists():
     # Get top 10 artists the last week
-    try:
-        results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "filter":
                 {"range": {"timestamp": {"gte": "now-7d/d", "lt": "now/d"}}}}},
         "aggs": {"artists": {"terms": {"field": "song.artist.keyword", "size": 10}}}})
-
-    except NotFoundError:
-        return "There's No Data"
 
     topartists = []
     for i in results['aggregations']['artists']['buckets']:
@@ -342,9 +293,7 @@ def get_top_artists():
 
 @app.route('/users/<id>/artists/top')
 def get_top_artist_for_user(id):
-
-    try:
-        results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
@@ -354,10 +303,6 @@ def get_top_artist_for_user(id):
         }
     },
         "aggs": {"artists": {"terms": {"field": "song.artist.keyword"}}}})
-
-    except NotFoundError:
-        return "There's no Data"
-
     topartists = []
     for i in results['aggregations']['artists']['buckets']:
         data = {
@@ -371,8 +316,7 @@ def get_top_artist_for_user(id):
 
 @app.route('/users/<id>/songs/top')
 def get_top_songs_for_user(id):
-    try:
-        results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
@@ -382,11 +326,6 @@ def get_top_songs_for_user(id):
         }
     },
         "aggs": {"artists": {"terms": {"field": "song.title.keyword"}}}})
-
-
-    except NotFoundError:
-        return "There's No Data"
-
     topartists = []
     for i in results['aggregations']['artists']['buckets']:
         data = {
@@ -400,9 +339,7 @@ def get_top_songs_for_user(id):
 
 @app.route('/users/<id>/genres/top')
 def get_top_genres_for_user(id):
-
-    try:
-        results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+    results = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
@@ -412,10 +349,6 @@ def get_top_genres_for_user(id):
         }
     },
         "aggs": {"artists": {"terms": {"field": "song.genre.keyword"}}}})
-
-    except NotFoundError:
-        return "There's No Data"
-
     topartists = []
     for i in results['aggregations']['artists']['buckets']:
         data = {
@@ -437,8 +370,7 @@ def get_namespace_log(namespace):
 @app.route('/users/<id>/recommendation/artists')
 def get_user_recommendations_artists(id):
     timeintervarl = "30"
-    try:
-        topGenreResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
+    topGenreResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "filter":
                 {"range": {"timestamp": {"gte": "now-" +
@@ -462,9 +394,6 @@ def get_user_recommendations_artists(id):
             }
         }
     }})
-
-    except NotFoundError:
-        return "There's No Data"
 
     topArtists = []
     for i in topGenreResult['aggregations']['artists']['buckets']:
@@ -501,12 +430,8 @@ def get_user_recommendations_artists(id):
 # This method returns the top songs for each user without duplicates as json
 @app.route('/users/<id>/recommendation/songs')
 def get_multiple_song_matches(id):
-    try:
 
-        multiple_users_top_songs = get_multiple_users_top_songs(id)
-    except NotFoundError:
-        return "There's No Data"
-
+    multiple_users_top_songs = get_multiple_users_top_songs(id)
     if(multiple_users_top_songs == None):
         return "The user hasn't listened to songs"
     elif(len(multiple_users_top_songs)== 0):
