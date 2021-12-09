@@ -5,6 +5,7 @@ from flask.helpers import send_file, send_from_directory
 from flask.json import dumps
 from markupsafe import escape
 from elasticsearch import Elasticsearch
+from elasticsearch.exceptions import NotFoundError
 import json
 import pymongo
 import urllib.parse
