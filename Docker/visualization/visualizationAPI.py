@@ -9,7 +9,7 @@ def home():
     return "Data collection visualization API"
 
 
-@app.route('/visuals')
+@app.route('/user')
 def getUsers():
     return render_template("index.html")
 

@@ -6,7 +6,7 @@ from datetime import datetime
 from elasticsearch import Elasticsearch
 from generator import *
 
-es = Elasticsearch("http://t05-elasticsearch:9200")
+es = Elasticsearch("http://t05-elasticsearch.production:9200")
 
 
 days = 14
@@ -37,7 +37,7 @@ for _ in range(5):
     user = generate_userCreated(days, countries)
     users.append(user) 
     user = json.dumps(user) 
-    requests.post('http://service01:80/users', json=user)
+    requests.post('http://service01.production:80/users', json=user)
 
 
 count = 0
@@ -77,11 +77,11 @@ while True:
         doc = generate_userCreated(days, countries)
         doc_json = json.dumps(doc)
         users.append(doc)
-        requests.post('http://service01:80/users', json=doc_json)
+        requests.post('http://service01.production:80/users', json=doc_json)
 
         doc = generate_adminCreated(days)
         doc_json = json.dumps(doc)
-        requests.post('http://service01:80/admins', json=doc_json)
+        requests.post('http://service01.production:80/admins', json=doc_json)
 
         artist = generate_artists(genres,days)
         artists.append(artist)

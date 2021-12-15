@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: t05-nginx
+  labels:
+    app: t05-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t05-nginx
+  template:
+    metadata:
+      labels:
+        app: t05-nginx
+    spec:
+      containers:
+      - name: t05-nginx
+        image: gitlab.sdu.dk:5050/semester-project-e2021/team-05/template/docker/proxy
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+              cpu: 300m
+              memory: 200Mi
+          requests:
+              cpu: 200m
+              memory: 150Mi
+      imagePullSecrets:
+      - name: sdugitlab
+
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: service02
+spec: 
+  type: ClusterIP
+  selector:
+    app: t05-nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
