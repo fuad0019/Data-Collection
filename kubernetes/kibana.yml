@@ -29,15 +29,15 @@ spec:
               cpu: 150m
               memory: 600Mi
           requests:
-              cpu: 50m
-              memory: 50Mi  
+              cpu: 100m
+              memory: 200Mi  
 
  
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: development
+  name: t05-kibana
 spec:
   selector:
     app: t05-kibana
