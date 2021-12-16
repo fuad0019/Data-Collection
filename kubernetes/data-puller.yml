@@ -35,7 +35,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: service03
+  name: t05-data-puller
 spec: 
   type: ClusterIP
   selector:

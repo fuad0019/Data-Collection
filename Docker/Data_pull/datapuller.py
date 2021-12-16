@@ -80,6 +80,9 @@ cacheUsers={}
 cacheSongs= {}
 cacheArtists={}
 
+@app.route('/', methods=['GET'])  # Define http method
+def home():
+    return "Data Puller"
 
 #Same as below
 @app.route('/pullUsers')
