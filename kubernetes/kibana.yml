@@ -24,6 +24,10 @@ spec:
           value: "http://t05-elasticsearch:9200"
         - name: ELASTICSEARCH_HOSTS
           value: "http://t05-elasticsearch:9200"
+        - name: SERVER_BASEPATH
+          value: /service02/kibana
+        - name: SERVER_REWRITEBASEPATH
+          value: "false"
         resources:
           limits:
               cpu: 150m
@@ -31,7 +35,6 @@ spec:
           requests:
               cpu: 100m
               memory: 200Mi  
-
  
 ---
 apiVersion: v1
