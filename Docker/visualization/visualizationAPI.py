@@ -1,4 +1,5 @@
 from flask import Flask, render_template  
+import datapuller
 
 # This sets up the application using the Flask object from the package flask.
 app = Flask(__name__)
@@ -11,6 +12,7 @@ def home():
 
 @app.route('/user')
 def getUsers():
+    datapuller.get_users()
     return render_template("index.html")
 
 
