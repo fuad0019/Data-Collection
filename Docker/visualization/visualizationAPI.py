@@ -12,8 +12,14 @@ def home():
 
 @app.route('/user')
 def getUsers():
-    datapuller.get_users()
-    return render_template("index.html")
+    var = str(datapuller.get_users())
+    print("Var is: " + var)
+    if var == "Updated Users":
+        return render_template("index.html", value=var)
+    elif var == "Users is up to date":
+        return render_template("index.html", value=var)
+    else:
+        return var
 
 
 if __name__ == '__main__':
