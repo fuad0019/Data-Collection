@@ -30,7 +30,6 @@ def generate_song(n,days, artists):
             "genre": fake.music_genre(),
             "artist": random.choice(artists)["name"],
             "timestamp": genTimestamp
-
             }
         songs_temp.append(song)
 
