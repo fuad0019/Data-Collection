@@ -1,4 +1,6 @@
 from flask import Flask, render_template  
+import requests
+
 
 # This sets up the application using the Flask object from the package flask.
 app = Flask(__name__)
@@ -11,7 +13,23 @@ def home():
 
 @app.route('/user')
 def getUsers():
-    return render_template("index.html")
+    
+    res = requests.get('http://t05-data-puller:80/pullUsers')
+
+    sc = res.status_code
+
+    if(sc >= 200 and sc < 300):
+        data = res.json()
+        return render_template("index.html", value=data["message"])
+    else:
+        return {"status code": sc}
+
+    
+    
+    
+    
+
+    
 
 
 

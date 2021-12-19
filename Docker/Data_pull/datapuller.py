@@ -7,7 +7,7 @@ import requests
 import os
 import pymongo
 import urllib.parse
-from flask import Flask, json
+from flask import Flask, json, jsonify
 
 app = Flask(__name__)
 
@@ -102,12 +102,14 @@ def get_users():
     cacheUsers.update(newUsers)
 
     if(len(newUsers)==0):
-        return "Users is up to date" 
+        respond = {"message": "Users is up to date"}
+        return jsonify(respond) 
     else:
         newFormatUsers= changeIdFormatUser(newUsers)
         sendToElastic('users',newFormatUsers)
+        respond = {"message":"Updated Users"}
 
-        return "Updated Users"           
+        return jsonify(respond)           
         
     
 
@@ -116,7 +118,8 @@ def get_songs():
     #Get all songs from datasearch
     allSongs = pull_all_songs()   
     if(len(allSongs)==0):
-        return "Data search link not working"
+        respond = {"message": "Data search link not working"}
+        return jsonify(respond) 
     newSongs={}
     for song in allSongs:
         if(len(cacheSongs)!=0):
@@ -134,18 +137,21 @@ def get_songs():
     cacheSongs.update(newSongs)
         #If list of new songs is empty, then up-to-date, if not then update elastic
     if(len(newSongs)==0):
-        return "Songs is up to date" 
+        respond = {"message": "Songs is up to date"}
+        return jsonify(respond) 
     else:
         sendToElastic('songs',newSongs.values())
-
-        return "Updated songs"    
+        respond = {"message": "Updated songs"}
+        return jsonify(respond) 
 
 #Same as above
 @app.route('/pullArtists')
 def get_artists():
     allArtists = pull_all_artists()
     if(len(allArtists)==0):
-        return "Data search link not working"
+        respond = {"message": "Data search link not working"}
+        return jsonify(respond) 
+
     newArtists={}
     for artist in allArtists:
         if(len(cacheArtists)!=0):
@@ -159,10 +165,13 @@ def get_artists():
     cacheArtists.update(newArtists)
 
     if(len(newArtists)==0):
-        return "Artists is up to date" 
+        respond = {"message": "Artists is up to date"}
+        return jsonify(respond) 
+
     else:
         sendToElastic('artists',newArtists.values())
-        return "Updated artists"   
+        respond = {"message": "Updated artists"}
+        return jsonify(respond) 
 
 
 if __name__ == '__main__':
