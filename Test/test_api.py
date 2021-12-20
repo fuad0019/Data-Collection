@@ -200,6 +200,15 @@ def test_get_user_recommendations_artists():
     output = testing.getcode()
     assert 200 == output
 
+def test_reverse_proxy():
+    testing = urllib.request.urlopen(domain + '/service02/visuals/user')
+    output = testing.getcode()
+    assert 200 == output
+    testing = urllib.request.urlopen(domain + '/service02/kibana')
+    output = testing.getcode()
+    assert 200 == output
+
+
 '''
 def test_data_puller():
     testing = urllib.request.urlopen(domain + '/service03/pullUsers')
