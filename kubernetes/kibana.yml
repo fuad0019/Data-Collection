@@ -30,11 +30,11 @@ spec:
           value: "false"
         resources:
           limits:
-              cpu: 150m
-              memory: 600Mi
+              cpu: 300m
+              memory: 800Mi
           requests:
-              cpu: 100m
-              memory: 200Mi  
+              cpu: 150m
+              memory: 300Mi  
  
 ---
 apiVersion: v1
