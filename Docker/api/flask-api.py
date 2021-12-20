@@ -437,15 +437,14 @@ def get_multiple_song_matches(id):
     elif(len(multiple_users_top_songs)== 0):
         return get_user_recommendations_songs(id)
 
-    noDuplicates = set(multiple_users_top_songs)
-    sortedList = sorted(noDuplicates)
+    sortedList = sorted(multiple_users_top_songs, key=lambda x: x['frequence'], reverse=True)
 
-    return jsonify(sortedList)
-
+    return jsonify({"collaborative" : sortedList})
 
 
 
-def get_user_recommendations_songs(id):
+
+def get_user_recommendations_songs(id): 
     timeintervarl = "30"
     topGenreResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
@@ -495,7 +494,7 @@ def get_user_recommendations_songs(id):
     for i in topGenreResult['hits'].get('hits'):
         songs.add(i["_source"]["title"])
     songslist = list(songs)
-    return jsonify(songslist)
+    return jsonify({"content_based" : songslist})
 
 
 # This method appends the top 10 users favorite 10 songs into an array. The output will be an array filled with arrays.
@@ -510,24 +509,37 @@ def get_multiple_users_top_songs(user):
 
     for i in matching_users:
         songs.extend(get_top_songs(i))
-    return songs
+
+    #changing a lists size while iterating might cause problems
+    unique_songs = set(songs)
+    songsWithFrequence = []
+    for i in unique_songs:
+        count = songs.count(i)
+        frequence = count/len(songs)
+
+        
+        songsWithFrequence.append({
+            "song": i,
+            "frequence": frequence}) 
+    
+    
+    return songsWithFrequence
+
+
 
 # This method searches in ES for a users top 10 songs. This method will be used in a loop to get all of top 10 matching users top 10 songs.
 def get_top_songs(id):
-    matching_users = find_matching_users(id)
-    if(matching_users == None):
-        return None
-    elif(len(matching_users)==0):
-        return []
+  
 
     songQueryResult = elastic.search(index="songstarted.team05.t05-fakemicroservice", doc_type="_doc", body={"query": {
         "bool": {
             "must": [
                 {"match": {
-                    "user": matching_users[0]}}]}},
+                    "user": id}}]}},
         "aggs": {"songs": {"terms": {"field": "song.title.keyword", "exclude": find_favorite_song(id)}}}})
 
     topSongs = []
+    
     for i in songQueryResult['aggregations']['songs']['buckets']:
         topSongs.append(i["key"])
     return topSongs
