@@ -437,7 +437,7 @@ def get_multiple_song_matches(id):
     elif(len(multiple_users_top_songs)== 0):
         return get_user_recommendations_songs(id)
 
-    sortedList = sorted(multiple_users_top_songs, key=lambda x: x['frequence'], reverse=True)
+    sortedList = sorted(multiple_users_top_songs, key=lambda x: x['freq'], reverse=True)
 
     return jsonify({"collaborative" : sortedList})
 
@@ -512,18 +512,18 @@ def get_multiple_users_top_songs(user):
 
     #changing a lists size while iterating might cause problems
     unique_songs = set(songs)
-    songsWithFrequence = []
+    songsWithfreq = []
     for i in unique_songs:
         count = songs.count(i)
-        frequence = count/len(songs)
+        freq = count/len(songs)
 
         
-        songsWithFrequence.append({
+        songsWithfreq.append({
             "song": i,
-            "frequence": frequence}) 
+            "freq": freq}) 
     
     
-    return songsWithFrequence
+    return songsWithfreq
 
 
 
