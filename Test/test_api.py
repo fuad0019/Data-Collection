@@ -2,23 +2,28 @@ import os
 import pytest
 import json
 import urllib.request
-
+import time
 
 domain = os.getenv("DOMAIN", "http://opensuse.stream.stud-srv.sdu.dk")
 
 
 
 def test_home():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01')
     output = testing.getcode()
     assert 200 == output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_getUsers():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/users')
     output = testing.getcode()
     assert 200 == output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_get_user_profile():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/users')
     output = testing.read().decode('utf-8')
     
@@ -36,8 +41,10 @@ def test_get_user_profile():
     assert "email" in output
     assert "gender" in output
     assert "name" in output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_get_history():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/users')
     users = testing.read().decode('utf-8')
 
@@ -62,8 +69,10 @@ def test_get_history():
     assert "genre" in output
     assert "title" in output
     assert "timestamp" in output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_get_search_history():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/users')
     users = testing.read().decode('utf-8')
 
@@ -82,9 +91,11 @@ def test_get_search_history():
 
     assert "searchterm" in output
     assert "timestamp" in output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 
 def test_amount_song_played_by_user():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/users/'+globaluserid+'/songs')
     songs = testing.read().decode('utf-8')
     
@@ -99,8 +110,10 @@ def test_amount_song_played_by_user():
     testing = urllib.request.urlopen(domain + '/service01/users/'+globaluserid+'/songs/'+songname+'/amount_played')
     output = testing.read().decode('utf-8')
     assert "plays" in output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_amount_artist_played_by_user():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/users/'+globaluserid+'/songs')
     songs = testing.read().decode('utf-8')
     
@@ -116,19 +129,25 @@ def test_amount_artist_played_by_user():
     output = testing.read().decode('utf-8')
     
     assert "plays" in output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_amount_song_played():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/songs/'+globalsong+'/amount_played')
     output = testing.read().decode('utf-8')
     assert "plays" in output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_artist_amount_played():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/artists/'+globalartist+'/amount_played')
     output = testing.read().decode('utf-8')
     assert "plays" in output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 
 def test_ad_amount_clicked():#/ads/<id>/amount_clicked
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/ads')
     output = testing.read().decode('utf-8')
     
@@ -140,39 +159,51 @@ def test_ad_amount_clicked():#/ads/<id>/amount_clicked
     output = testing.read().decode('utf-8')
 
     assert "clicks" in output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 
 def test_get_top_songs():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/songs/top')
     output = testing.read().decode('utf-8')
     assert "plays" in output
     assert "song" in output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_get_top_artists():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/artists/top')
     output = testing.read().decode('utf-8')
     assert "artist" in output
     assert "plays" in output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_get_top_artist_for_user():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/users/' +globaluserid+ '/artists/top')
     output = testing.read().decode('utf-8')
     assert "artist" in output
     assert "plays" in output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_get_top_songs_for_user():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/users/' +globaluserid+ '/songs/top')
     output = testing.read().decode('utf-8')
     assert "song" in output
     assert "plays" in output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_get_top_genres_for_user():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/users/' +globaluserid+ '/genres/top')
     output = testing.read().decode('utf-8')
     assert "genre" in output
     assert "plays" in output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_get_namespace_log():
+    start = time.time()
     testing05 = urllib.request.urlopen(domain + '/service01/logs/team05')
     testingkube = urllib.request.urlopen(domain + '/service01/logs/kube-system')
     testinglonghorn = urllib.request.urlopen(domain + '/service01/logs/longhorn')
@@ -189,17 +220,23 @@ def test_get_namespace_log():
     assert 200 == outputlonghorn
     assert 200 == outputfluent
     assert 200 == outputingress
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_get_user_recommendations_songs():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/users/' +globaluserid+ '/recommendation/songs')
     output = testing.getcode()
     assert 200 == output
+    print("The test took " + str(time.time() - start) + " seconds")
 
 def test_get_user_recommendations_artists():
+    start = time.time()
     testing = urllib.request.urlopen(domain + '/service01/users/' +globaluserid+ '/recommendation/artists')
     output = testing.getcode()
     assert 200 == output
+    print("The test took " + str(time.time() - start) + " seconds")
 
+'''
 def test_reverse_proxy():
     testing = urllib.request.urlopen(domain + '/service02/visuals/user')
     output = testing.getcode()
@@ -207,7 +244,7 @@ def test_reverse_proxy():
     testing = urllib.request.urlopen(domain + '/service02/kibana')
     output = testing.getcode()
     assert 200 == output
-
+'''
 
 '''
 def test_data_puller():
